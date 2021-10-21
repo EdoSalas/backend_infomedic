@@ -6,7 +6,7 @@ import morgan from 'morgan';
 
 //Settings
 const app = express();
-app.set('port', config.BACKEND_PORT);
+app.set('port', process.env.port || config.BACKEND_PORT);
 
 //Middlewares
 app.use(morgan('dev'));
@@ -19,6 +19,7 @@ app.use('/api/regions', regions);
 //Init
 console.log("Server listen on port ", port);
 app.get('/', (req, res) => {
+    console.log("Hola");
     res.json({
         message: "Welcome!",
         description: `Listening in port: ${port}`
