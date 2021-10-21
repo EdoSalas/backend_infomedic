@@ -31,7 +31,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "build": "babel src --out-dir build",
-    "start": "nodemon src/app.js --exec babel-node"
+    "start": "nodemon src/index.js --exec babel-node"
   },
   "eslintConfig": {
     "extends": [
