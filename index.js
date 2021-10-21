@@ -1,7 +1,7 @@
 //Imports
-import config from './config';
+import config from './src/config';
 import express from 'express';
-import regions from './routes/regions.routes';
+import regions from './src/routes/regions.routes';
 import morgan from 'morgan';
 
 //Settings
