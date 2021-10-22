@@ -1,5 +1,5 @@
 //Imports
-import { PgSingleton } from "../Singleton/pgSingleton";
+import { PgSingleton } from "../singleton/pgSingleton";
 import EStatus from "../model/enums/EStatus";
 import Regions from "../model/regions";
 

@@ -1,6 +1,6 @@
 import { Router } from "express";
-import BaseResponse from "../Reponse/BaseResponse";
-import ResponseError from "../Reponse/ResponseError";
+import BaseResponse from "../response/BaseResponse";
+import ResponseError from "../response/ResponseError";
 
 //Controllers
 import * as regionsCtrl from "../controller/regions.controller";
