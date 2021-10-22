@@ -3,6 +3,7 @@ import config from './src/config';
 import express from 'express';
 import regions from './src/routes/regions.routes';
 import morgan from 'morgan';
+import cors from 'cors';
 
 //Settings
 const app = express();
@@ -10,6 +11,7 @@ app.set('port', process.env.port || config.BACKEND_PORT);
 
 //Middlewares
 app.use(morgan('dev'));
+app.use(cors());
 
 //Routers
 const port = app.get('port');
