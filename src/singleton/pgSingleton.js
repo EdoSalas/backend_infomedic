@@ -20,6 +20,7 @@ export class PgSingleton {
     };
 
     static async save(insert, find) {
+        console.log(`Save:\n${insert}\nFind saved:\n${find}`);
         await this.getInstance();
         try {
             await this.db.none(insert);
@@ -33,6 +34,7 @@ export class PgSingleton {
     };
 
     static async find(query) {
+        console.log(`Find All:\n${query}`);
         await this.getInstance();
         try {
             const result = await this.db.manyOrNone(query);
@@ -45,6 +47,7 @@ export class PgSingleton {
     };
 
     static async findOne(query) {
+        console.log(`Find One:\n${query}`);
         await this.getInstance();
         try {
             const result = await this.db.oneOrNone(query);
@@ -57,6 +60,7 @@ export class PgSingleton {
     };
 
     static async update(update, find) {
+        console.log(`Update:\n${update}\nFind updated:\n${find}`);
         await this.getInstance();
         try {
             await this.db.none(update);
@@ -70,6 +74,7 @@ export class PgSingleton {
     };
 
     static async delete(del, find) {
+        console.log(`Delete:\n${del}\nFind deleted:\n${find}`);
         await this.getInstance();
         try {
             await this.db.none(del);

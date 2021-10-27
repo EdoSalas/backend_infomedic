@@ -1,4 +1,5 @@
 import { Router } from "express";
+import bodyParser from "body-parser";
 import BaseResponse from "../response/BaseResponse";
 import ResponseError from "../response/ResponseError";
 
@@ -8,6 +9,7 @@ import * as regionsCtrl from "../controller/regions.controller";
 //Middlewares
 
 //Routers
+const jsonParser = bodyParser.json();
 const router = Router();
 router.get('/', async (req, res) => {
     try {
@@ -23,7 +25,7 @@ router.get('/', async (req, res) => {
         return res.status(400).json(
             new ResponseError(
                 "Regions",
-                "Error in test.routes.js exec router.get('/')"
+                "Error in regions.routes.js exec router.get('/')"
             )
         );
     }
@@ -35,7 +37,7 @@ router.get('/:region/id', async (req, res) => {
         return res.status(200).json(
             new BaseResponse(
                 "Regions",
-                "Regions obtained",
+                "Region obtained",
                 data
             )
         );
@@ -43,19 +45,20 @@ router.get('/:region/id', async (req, res) => {
         return res.status(400).json(
             new ResponseError(
                 "Regions",
-                "Error in test.routes.js exec router.get('/:region/id')"
+                "Error in regions.routes.js exec router.get('/:region/id')"
             )
         );
     }
 });
 
-router.post('/:region/name', async (req, res) => {
+router.get('/:region/name', async (req, res) => {
     try {
-        const data = await regionsCtrl.save(req.params.region);
+        const { region } = req.params;
+        const data = await regionsCtrl.getByName(region);
         return res.status(200).json(
             new BaseResponse(
                 "Regions",
-                "Regions inserted",
+                "Region obtained",
                 data
             )
         );
@@ -63,16 +66,37 @@ router.post('/:region/name', async (req, res) => {
         return res.status(400).json(
             new ResponseError(
                 "Regions",
-                "Error in test.routes.js exec router.post('/:region/name')"
+                "Error in regions.routes.js exec router.get('/:region/name')"
             )
         );
     }
 });
 
-router.put('/:region/:id/update', async (req, res) => {
+router.post('/', jsonParser, async (req, res) => {
     try {
-        const { region, id } = req.params;
-        const data = await regionsCtrl.update(region, id);
+        const { name } = req.body;
+        const data = await regionsCtrl.save(name);
+        return res.status(200).json(
+            new BaseResponse(
+                "Regions",
+                "Region inserted",
+                data
+            )
+        );
+    } catch (error) {
+        return res.status(400).json(
+            new ResponseError(
+                "Regions",
+                "Error in regions.routes.js exec router.post('/')"
+            )
+        );
+    }
+});
+
+router.put('/', jsonParser, async (req, res) => {
+    try {
+        const { pk_region, name } = req.body;
+        const data = await regionsCtrl.update(pk_region, name);
         return res.status(200).json(
             new BaseResponse(
                 "Regions",
@@ -84,16 +108,16 @@ router.put('/:region/:id/update', async (req, res) => {
         return res.status(400).json(
             new ResponseError(
                 "Regions",
-                "Error in test.routes.js exec router.put('/:region/:id/update')"
+                "Error in regions.routes.js exec router.put('/')"
             )
         );
     }
 });
 
-router.put('/:id/delete', async (req, res) => {
+router.put('/delete', jsonParser, async (req, res) => {
     try {
-        const { id } = req.params;
-        const data = await regionsCtrl.delet(id);
+        const { pk_region } = req.body;
+        const data = await regionsCtrl.delet(pk_region);
         return res.status(200).json(
             new BaseResponse(
                 "Regions",
@@ -105,7 +129,7 @@ router.put('/:id/delete', async (req, res) => {
         return res.status(400).json(
             new ResponseError(
                 "Regions",
-                "Error in test.routes.js exec router.put('/:id/delete')"
+                "Error in regions.routes.js exec router.put('/')"
             )
         );
     }

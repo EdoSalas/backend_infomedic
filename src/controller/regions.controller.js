@@ -6,12 +6,12 @@ import Regions from "../model/regions";
 export const save = async (name) => {
     try {
         const result = await PgSingleton.save(
-            `INSERT INTO regions (name, status) VALUES (${name}, ${EStatus.ACTIVE})`,
-            `SELECT r.* FROM regions r WHERE r.status = ${EStatus.ACTIVE} AND r.name = ${name}`
+            `INSERT INTO regions (name, status) VALUES ('${name}', ${EStatus.ACTIVE})`,
+            `SELECT r.* FROM regions r WHERE r.status = ${EStatus.ACTIVE} AND r.name = '${name}'`
         );
         if (!result)
             throw new Error("Not inserted");
-        return result;
+        return new Regions(result.pk_region, result.name, EStatus.ACTIVE);
     } catch (error) {
         throw error;
     }
@@ -22,6 +22,7 @@ export const getAll = async () => {
         const result = await PgSingleton.find(`SELECT r.* FROM regions r WHERE r.status = ${EStatus.ACTIVE}`);
         if (!result)
             throw new Error("Not Found");
+        // eslint-disable-next-line no-array-constructor
         const regions = new Array();
         result.map(async (r) => {
             regions.push(new Regions(
@@ -61,12 +62,12 @@ export const getByName = async (name) => {
 export const update = async (id, name) => {
     try {
         const result = await PgSingleton.update(
-            `UPDATE regions SET name = ${name} WHERE pk_region = ${id} AND status = ${EStatus.ACTIVE}`,
+            `UPDATE regions SET name = '${name}' WHERE pk_region = ${id} AND status = ${EStatus.ACTIVE}`,
             `SELECT r.* FROM regions r WHERE r.status = ${EStatus.ACTIVE} AND r.pk_region = ${id}`
         );
         if (!result)
             throw new Error("Not update");
-        return result;
+        return new Regions(result.pk_region, result.name, EStatus.ACTIVE);
     } catch (error) {
         throw error;
     }
@@ -80,7 +81,7 @@ export const delet = async (id) => {
         );
         if (!result)
             throw new Error("Not update");
-        return result;
+        return new Regions(result.pk_region, result.name, EStatus.ACTIVE);
     } catch (error) {
         throw error;
     }
