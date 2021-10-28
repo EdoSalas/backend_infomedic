@@ -42,7 +42,7 @@ router.get('/', async (req, res) => {
         return res.status(400).json(
             new ResponseError(
                 "Medical Recomendations",
-                "Error in medicalRecomendations.routes.js exec router.post('/')"
+                "Error in medicalRecomendations.routes.js exec router.get('/')"
             )
         );
     }
@@ -62,7 +62,7 @@ router.get('/:medicalRecomendation', async (req, res) => {
         return res.status(400).json(
             new ResponseError(
                 "Medical Recomendations",
-                "Error in medicalRecomendations.routes.js exec router.post('/')"
+                "Error in medicalRecomendations.routes.js exec router.get('/:medicalRecomendation')"
             )
         );
     }
@@ -82,7 +82,7 @@ router.put('/', jsonParser, async (req, res) => {
         return res.status(400).json(
             new ResponseError(
                 "Medical Recomendations",
-                "Error in medicalRecomendations.routes.js exec router.post('/')"
+                "Error in medicalRecomendations.routes.js exec router.put('/')"
             )
         );
     }
@@ -102,7 +102,7 @@ router.put('/delete', jsonParser, async (req, res) => {
         return res.status(400).json(
             new ResponseError(
                 "Medical Recomendations",
-                "Error in medicalRecomendations.routes.js exec router.post('/')"
+                "Error in medicalRecomendations.routes.js exec router.put('/delete')"
             )
         );
     }

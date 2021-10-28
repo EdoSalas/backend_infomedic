@@ -81,7 +81,7 @@ export const delet = async (id) => {
             `UPDATE medicalrecomendations SET status = ${EStatus.INACTIVE} WHERE pk_medrecomendation = ${id}`,
             `SELECT m.* FROM medicalrecomendations m WHERE m.pk_medrecomendation = ${id} AND m.status = ${EStatus.INACTIVE}`);
         if (!result)
-            throw new ResponseError("Error", "Not Updated");
+            throw new ResponseError("Error", "Not Deleted");
         return await convert(result, 'one');
     } catch (error) {
         throw error;

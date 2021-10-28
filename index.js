@@ -8,6 +8,7 @@ import cors from 'cors';
 import regions from './src/routes/regions.routes';
 import users from "./src/routes/users.routes";
 import medicalRecomendations from "./src/routes/medicalRecomendations.routes";
+import symptoms from "./src/routes/symptoms.routes";
 
 //Settings
 const app = express();
@@ -23,6 +24,7 @@ app.listen(port);
 app.use('/api/regions', regions);
 app.use('/api/users', users);
 app.use('/api/medical', medicalRecomendations);
+app.use('/api/symptoms', symptoms);
 
 //Init
 console.log("Server listen on port ", port);
