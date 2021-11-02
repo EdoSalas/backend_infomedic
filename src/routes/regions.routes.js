@@ -11,6 +11,7 @@ import * as regionsCtrl from "../controller/regions.controller";
 //Routers
 const jsonParser = bodyParser.json();
 const router = Router();
+
 router.get('/', async (req, res) => {
     try {
         const data = await regionsCtrl.getAll();
