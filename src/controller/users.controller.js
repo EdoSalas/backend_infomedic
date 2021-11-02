@@ -13,6 +13,7 @@ const convert = async (user, type) => {
                 user.name,
                 user.lastnames,
                 user.dateofbirth,
+                user.gender,
                 user.email,
                 EType.USER,
                 user.password,
@@ -31,6 +32,7 @@ const convert = async (user, type) => {
                     u.name,
                     u.lastnames,
                     u.dateofbirth,
+                    u.gender,
                     u.email,
                     EType.USER,
                     u.password,
@@ -87,6 +89,36 @@ export const getByID = async (id) => {
             INNER JOIN cantons c ON u.fk_canton = c.pk_canton 
             INNER JOIN provinces p ON c.fk_province = p.pk_province 
             INNER JOIN regions r ON c.fk_region = r.pk_region WHERE u.status = ${EStatus.ACTIVE} AND u.id = '${id}'`);
+        if (!result)
+            throw new ResponseError("Error", "Not result");
+        return await convert(result, 'one');
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const getByGender = async (gender) => {
+    try {
+        const result = await PgSingleton.find(`SELECT u.*, c."name" as canton, p."name" as province, r."name" as region
+            FROM users u 
+            INNER JOIN cantons c ON u.fk_canton = c.pk_canton 
+            INNER JOIN provinces p ON c.fk_province = p.pk_province 
+            INNER JOIN regions r ON c.fk_region = r.pk_region WHERE u.status = ${EStatus.ACTIVE} AND u.gender = '${gender}'`);
+        if (!result)
+            throw new ResponseError("Error", "Not result");
+        return await convert(result, 'more');
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const getByCredential = async (user) => {
+    try {
+        const result = await PgSingleton.findOne(`SELECT u.*, c."name" as canton, p."name" as province, r."name" as region
+            FROM users u 
+            INNER JOIN cantons c ON u.fk_canton = c.pk_canton 
+            INNER JOIN provinces p ON c.fk_province = p.pk_province 
+            INNER JOIN regions r ON c.fk_region = r.pk_region WHERE u.status = ${EStatus.ACTIVE} AND u.id = '${user.idNumber}' AND u.password = '${user.password}'`);
         if (!result)
             throw new ResponseError("Error", "Not result");
         return await convert(result, 'one');

@@ -49,14 +49,54 @@ router.get('/:user/id', async (req, res) => {
     }
 });
 
+router.get('/:user/genero', async (req, res) => {
+    try {
+        const { user } = req.params;
+        return res.status(200).json(
+            new BaseResponse(
+                "Users",
+                "User obtained",
+                await usersCtrl.getByGender(user)
+            )
+        );
+    } catch (error) {
+        return res.status(400).json(
+            new ResponseError(
+                "Users",
+                "Error in users.routes.js exec router.get('/:user/id')"
+            )
+        );
+    }
+});
+
 router.post('/', jsonParser, async (req, res) => {
     try {
-        const { id, name, lastname, dateOfBirth, email, password, canton } = req.body;
+        const { id, name, lastname, dateOfBirth, genero, email, password, canton } = req.body;
         return res.status(200).json(
             new BaseResponse(
                 "Users",
                 "User inserted",
-                await usersCtrl.save(new Users("", id, name, lastname, dateOfBirth, email, EType.USER, password, EStatus.ACTIVE, canton))
+                await usersCtrl.save(new Users("", id, name, lastname, dateOfBirth, genero, email, EType.USER, password, EStatus.ACTIVE, canton, ""))
+            )
+        );
+    } catch (error) {
+        return res.status(400).json(
+            new ResponseError(
+                "Users",
+                "Error in users.routes.js exec router.post('/')"
+            )
+        );
+    }
+});
+
+router.post('/credenciales', jsonParser, async (req, res) => {
+    try {
+        const { id, password } = req.body;
+        return res.status(200).json(
+            new BaseResponse(
+                "Users",
+                "User founded",
+                await usersCtrl.getByCredential(new Users("", id, "", "", "", "", "", EType.USER, password, EStatus.ACTIVE, "", ""))
             )
         );
     } catch (error) {
@@ -72,7 +112,7 @@ router.post('/', jsonParser, async (req, res) => {
 router.put('/', jsonParser, async (req, res) => {
     try {
         const { id, name, lastname, email, canton } = req.body;
-        const user = new Users("", id, name, lastname, "", email, "", "", "", canton);
+        const user = new Users("", id, name, lastname, "", "", email, EType.USER, "", EStatus.ACTIVE, canton, "")
         return res.status(200).json(
             new BaseResponse(
                 "Users",
@@ -93,7 +133,7 @@ router.put('/', jsonParser, async (req, res) => {
 router.put('/password', jsonParser, async (req, res) => {
     try {
         const { id, password } = req.body;
-        const user = new Users("", id, "", "", "", "", "", password, "", "");
+        const user = new Users("", id, "", "", "", "", "", "", password, "", "", "");
         return res.status(200).json(
             new BaseResponse(
                 "Users",

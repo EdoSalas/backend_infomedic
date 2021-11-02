@@ -10,6 +10,7 @@ import users from "./src/routes/users.routes";
 import medicalRecomendations from "./src/routes/medicalRecomendations.routes";
 import symptoms from "./src/routes/symptoms.routes";
 import provinces from "./src/routes/provinces.routes";
+import cantons from "./src/routes/cantons.routes"
 
 //Settings
 const app = express();
@@ -27,6 +28,7 @@ app.use('/api/users', users);
 app.use('/api/medical', medicalRecomendations);
 app.use('/api/symptoms', symptoms);
 app.use('/api/provinces', provinces);
+app.use('/api/cantons', cantons);
 
 //Init
 console.log("Server listen on port ", port);
