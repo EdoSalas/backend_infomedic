@@ -66,7 +66,7 @@ export const getByProvince = async (province) => {
                                                 FROM cantons c
                                                 INNER JOIN provinces p on c.fk_province = p.pk_province
                                                 INNER JOIN regions r on c.fk_region = r.pk_region
-                                                WHERE c.status = ${EStatus.ACTIVE} AND p.name = '${province}'
+                                                WHERE c.status = ${EStatus.ACTIVE} AND c.fk_province = '${province}'
                                                 ORDER BY r.pk_region, p.pk_province, c.pk_canton`);
         if(!result)
             throw new ResponseError("Error", "Not founded");
