@@ -52,7 +52,7 @@ const convert = async (user, type) => {
 export const save = async (user) => {
     try {
         const result = await PgSingleton.save(
-            `INSERT INTO users (id, name, lastnames, dateofbirth, email, type, status, fk_canton, password) VALUES ('${user.idNumber}', '${user.name}', '${user.lastname}', '${user.dateOfBirth}', '${user.email}', ${EType.USER}, ${EStatus.ACTIVE}, ${user.canton}, '${user.password}')`,
+            `INSERT INTO users (id, name, lastnames, dateofbirth, email, type, status, fk_canton, password, gender) VALUES ('${user.idNumber}', '${user.name}', '${user.lastname}', '${user.dateOfBirth}', '${user.email}', ${EType.USER}, ${EStatus.ACTIVE}, ${user.canton}, '${user.password}', '${user.genero}')`,
             `SELECT u.*, c."name" as canton, p."name" as province, r."name" as region
              FROM users u 
              INNER JOIN cantons c ON u.fk_canton = c.pk_canton 
