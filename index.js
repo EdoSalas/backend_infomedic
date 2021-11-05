@@ -12,6 +12,7 @@ import symptoms from "./src/routes/symptoms.routes";
 import provinces from "./src/routes/provinces.routes";
 import cantons from "./src/routes/cantons.routes";
 import diseases from "./src/routes/diseases.routes";
+import riskFactor from "./src/routes/riskFactors.routes";
 
 //Settings
 const app = express();
@@ -31,6 +32,7 @@ app.use('/api/symptoms', symptoms);
 app.use('/api/provinces', provinces);
 app.use('/api/cantons', cantons);
 app.use('/api/diseases', diseases);
+app.use('/api/riskFactor', riskFactor);
 
 //Init
 console.log("Server listen on port ", port);
