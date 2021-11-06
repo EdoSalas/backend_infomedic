@@ -97,6 +97,21 @@ export const getByID = async (id) => {
     }
 };
 
+export const getByPK = async (id) => {
+    try {
+        const result = await PgSingleton.findOne(`SELECT u.*, c."name" as canton, p."name" as province, r."name" as region
+            FROM users u 
+            INNER JOIN cantons c ON u.fk_canton = c.pk_canton 
+            INNER JOIN provinces p ON c.fk_province = p.pk_province 
+            INNER JOIN regions r ON c.fk_region = r.pk_region WHERE u.status = ${EStatus.ACTIVE} AND u.pk_user = ${id}`);
+        if (!result)
+            throw new ResponseError("Error", "Not result");
+        return await convert(result, 'one');
+    } catch (error) {
+        throw error;
+    }
+};
+
 export const getByGender = async (gender) => {
     try {
         const result = await PgSingleton.find(`SELECT u.*, c."name" as canton, p."name" as province, r."name" as region

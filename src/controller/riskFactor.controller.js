@@ -6,13 +6,13 @@ import RiskFactors from "../model/riskFactors";
 const convert = (riskFactor, type) => {
     try {
         if (type === 'one')
-            return new RiskFactors(riskFactor.pk_disease, riskFactor.name, riskFactor.status);
+            return new RiskFactors(riskFactor.pk_riskfactor, riskFactor.name, riskFactor.status);
         else {
             // eslint-disable-next-line no-array-constructor
             const riskFactors = Array();
             riskFactor.map(async (rf) => {
                 riskFactors.push(await new RiskFactors(
-                    rf.pk_disease,
+                    rf.pk_riskfactor,
                     rf.name,
                     rf.status,
                 ));
