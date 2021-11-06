@@ -14,6 +14,7 @@ import cantons from "./src/routes/cantons.routes";
 import diseases from "./src/routes/diseases.routes";
 import riskFactor from "./src/routes/riskFactors.routes";
 import riskFactorForUser from "./src/routes/riskFactorsForUser.routes";
+import riskFactorForDisease from "./src/routes/riskFactorsForDisease.routes";
 
 //Settings
 const app = express();
@@ -35,6 +36,7 @@ app.use('/api/cantons', cantons);
 app.use('/api/diseases', diseases);
 app.use('/api/riskFactor', riskFactor);
 app.use('/api/riskFactorForUser', riskFactorForUser);
+app.use('/api/riskFactorForDisease', riskFactorForDisease);
 
 //Init
 console.log("Server listen on port ", port);
