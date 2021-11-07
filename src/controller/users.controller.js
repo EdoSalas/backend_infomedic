@@ -15,9 +15,9 @@ const convert = async (user, type) => {
                 user.dateofbirth,
                 user.gender,
                 user.email,
-                EType.USER,
+                user.type,
                 user.password,
-                EStatus.ACTIVE,
+                user.status,
                 user.fk_canton,
                 `${user.canton} - ${user.province} - Región ${user.region}`
             );
@@ -34,9 +34,9 @@ const convert = async (user, type) => {
                     u.dateofbirth,
                     u.gender,
                     u.email,
-                    EType.USER,
+                    u.type,
                     u.password,
-                    EStatus.ACTIVE,
+                    u.status,
                     u.fk_canton,
                     `${u.canton} - ${u.province} - Región ${u.region}`
                 ));
@@ -73,7 +73,7 @@ export const getAll = async () => {
             FROM users u 
             INNER JOIN cantons c ON u.fk_canton = c.pk_canton 
             INNER JOIN provinces p ON c.fk_province = p.pk_province 
-            INNER JOIN regions r ON c.fk_region = r.pk_region WHERE u.type = ${EType.USER} AND u.status = ${EStatus.ACTIVE}`);
+            INNER JOIN regions r ON c.fk_region = r.pk_region WHERE u.status = ${EStatus.ACTIVE}`);
         if (!result)
             throw new ResponseError("Error", "Not result");
         return await convert(result, 'more');
