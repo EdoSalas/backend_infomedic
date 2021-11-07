@@ -16,6 +16,7 @@ import riskFactor from "./src/routes/riskFactors.routes";
 import riskFactorForUser from "./src/routes/riskFactorsForUser.routes";
 import riskFactorForDisease from "./src/routes/riskFactorsForDisease.routes";
 import symptomsForUser from "./src/routes/symptomsForUser.routes";
+import symptomsForDisease from "./src/routes/symptomsForDisease.routes";
 
 //Settings
 const app = express();
@@ -39,6 +40,7 @@ app.use('/api/riskFactor', riskFactor);
 app.use('/api/riskFactorForUser', riskFactorForUser);
 app.use('/api/riskFactorForDisease', riskFactorForDisease);
 app.use('/api/symptomsForUser', symptomsForUser);
+app.use('/api/symptomsForDisease', symptomsForDisease);
 
 //Init
 console.log("Server listen on port ", port);
