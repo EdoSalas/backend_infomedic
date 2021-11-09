@@ -112,6 +112,23 @@ export const getByPK = async (id) => {
     }
 };
 
+export const getByRegion = async (region) => {
+    try {
+        const result = await PgSingleton.find(`
+            SELECT u.*
+            FROM regions r
+            INNER JOIN cantons c ON r.pk_region = c.fk_region 
+            INNER JOIN users u ON c.pk_canton = u.fk_canton 
+            WHERE r.pk_region = ${region}
+        `);
+        if (!result)
+            throw new ResponseError("Error", "Not result");
+        return await convert(result, 'more');
+    } catch (error) {
+        throw error;
+    }
+};
+
 export const getByGender = async (gender) => {
     try {
         const result = await PgSingleton.find(`SELECT u.*, c."name" as canton, p."name" as province, r."name" as region
@@ -145,7 +162,7 @@ export const getByCredential = async (user) => {
 export const update = async (user) => {
     try {
         const result = await PgSingleton.update(
-            `UPDATE users SET name = '${user.name}', lastnames = '${user.lastname}', email = '${user.email}', fk_canton = ${user.canton}, dateofbirth = ${user.dateOfBirth} WHERE id = '${user.idNumber}'`,
+            `UPDATE users SET name = '${user.name}', lastnames = '${user.lastname}', email = '${user.email}', fk_canton = ${user.canton}, dateofbirth = '${user.dateOfBirth}' WHERE id = '${user.idNumber}'`,
             `SELECT u.*, c."name" as canton, p."name" as province, r."name" as region
             FROM users u 
             INNER JOIN cantons c ON u.fk_canton = c.pk_canton 
