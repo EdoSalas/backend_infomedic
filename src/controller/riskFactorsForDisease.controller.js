@@ -119,3 +119,19 @@ export const delet = async (id) => {
         throw error;
     }
 };
+
+export const deleted = async (riskfactor, disease) => {
+    try {
+        const result = await PgSingleton.update(
+            `UPDATE risksfordisease SET status = ${EStatus.INACTIVE} WHERE fk_disease = ${disease} AND fk_riskfactor = ${riskfactor}`,
+            `SELECT rfd.* FROM risksfordisease rfd WHERE rfd.fk_disease = ${disease} AND rfd.fk_riskfactor = ${riskfactor} AND rfd.status = ${EStatus.INACTIVE}`
+        );
+        if (!result)
+            throw new ResponseError("Error!", "Not founded");
+        result['diseaseInfo'] = await diseaseCtrl.getByID(result.fk_disease);
+        result['riskInfo'] = await riskCtrl.getByID(result.fk_riskfactor);
+        return await convert(result, 'one');
+    } catch (error) {
+        throw error;
+    }
+};

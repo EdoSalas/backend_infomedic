@@ -107,4 +107,24 @@ router.put('/delete', jsonParser, async (req, res) => {
     }
 });
 
+router.put('/delete/symptomDisease', jsonParser, async (req, res) => {
+    try {
+        const { symptom, disease } = req.body;
+        return res.status(200).json(
+            new BaseResponse(
+                "SymptomsForDisease",
+                "SymptomsForDisease deleted",
+                await symptomsDiseaseCtrl.deleted(symptom, disease)
+            )
+        );
+    } catch (error) {
+        return res.status(400).json(
+            new ResponseError(
+                "SymptomsForDisease",
+                "Error in SymptomsForDisease.routes.js exec router.put('/delete/symptomDisease')"
+            )
+        );
+    }
+});
+
 export default router;
