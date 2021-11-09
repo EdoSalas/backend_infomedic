@@ -4,6 +4,7 @@ import EStatus from "../model/enums/EStatus";
 import DiseasesForUser from "../model/reports/diseasesForUser.reports";
 import DiseasesForRegion from "../model/reports/diseasesForRegion.reports";
 import * as userCtrl from "./users.controller";
+import * as diseasesCtrl from "./diseases.controller";
 
 const diseasesForUserByRiskFactors = async (id) => {
     try {
@@ -29,35 +30,56 @@ const diseasesForUserByRiskFactors = async (id) => {
     }
 };
 
-const diseasesForUserBySymptoms = async (id) => {
+const diseasesForUserBySymptoms = async (id, initDate, finalDate) => {
     try {
         const user = await userCtrl.getByID(id);
         if (!user)
             throw new ResponseError("Error!", "Not user founded");
 
-        const diseases = await PgSingleton.find(`
-            SELECT DISTINCT d.*
-            FROM users u 
-            INNER JOIN symptomsforuser sfu ON u.pk_user = sfu.fk_user
-            INNER JOIN symptomsfordesease sfd ON sfu.fk_symptom = sfd.fk_symptom 
-            INNER JOIN diseases d ON sfd.fk_disease = d.pk_disease 
-            WHERE u.id = '${user.idNumber}' AND u.status = ${EStatus.ACTIVE}
-        `);
-
-        if (!diseases)
+        const allDiseases = await diseasesCtrl.getAll();
+        if (!allDiseases)
             throw new ResponseError("Error!", "Not diseases founded");
+        
+        // eslint-disable-next-line no-array-constructor
+        const diseases = new Array();
+        await Promise.all(
+            allDiseases.map(async (d) => {
+                const amount = await PgSingleton.findOne(`
+                    SELECT COUNT(DISTINCT sfd.fk_symptom) AS symptoms
+                    FROM diseases d
+                    INNER JOIN symptomsfordesease sfd ON sfd.fk_disease = d.pk_disease 
+                    WHERE d.pk_disease = ${d.id}
+                `);
+                const amountUserSymptoms = await PgSingleton.findOne(`
+                    SELECT COUNT(DISTINCT sfu.fk_symptom) AS symptoms
+                    FROM diseases d 
+                    INNER JOIN symptomsfordesease sfd ON d.pk_disease = sfd.fk_disease 
+                    INNER JOIN symptomsforuser sfu ON sfd.fk_symptom = sfu.fk_symptom 
+                    INNER JOIN users u ON sfu.fk_user = u.pk_user 
+                    WHERE u.id = '${user.idNumber}' AND d.pk_disease = ${d.id} AND sfu.date BETWEEN '${initDate}' AND '${finalDate}'
+                `);
+                if(amountUserSymptoms.symptoms > 0){
+                    const percentage = (amountUserSymptoms.symptoms*100)/amount.symptoms;
+                    if(percentage >= 50){
+                        d['percentage'] = percentage;
+                        diseases.push(d);
+                    }
+                }
+            })
+        );
 
         return new DiseasesForUser(user, diseases);
     } catch (error) {
+        console.log(error);
         throw error;
     }
 };
 
 
-export const diseasesForUser = async (user, type) => {
+export const diseasesForUser = async (user, initDate, finalDate, type) => {
     try {
         if (type === 'symptom')
-            return await diseasesForUserBySymptoms(user);
+            return await diseasesForUserBySymptoms(user, initDate, finalDate);
         else if (type === 'riskFactor')
             return await diseasesForUserByRiskFactors(user);
         else
