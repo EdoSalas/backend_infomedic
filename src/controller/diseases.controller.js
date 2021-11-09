@@ -70,9 +70,20 @@ export const getByName = async (name) => {
     }
 };
 
+export const getByriskFactor = async (riskFactor) => {
+    try {
+        const result = await PgSingleton.findOne(`SELECT d.* FROM diseases d INNER JOIN risksfordisease rdf ON d.pk_disease = rdf.fk_disease WHERE d.status = ${EStatus.ACTIVE} AND rdf.fk_riskfactor = ${riskFactor}`);
+        if(!result)
+            throw new ResponseError("Error!", "Not founded");
+        return await convert(result, 'one');
+    } catch (error) {
+        throw error;
+    }
+};
+
 export const getBySymptom = async (symptom) => {
     try {
-        const result = await PgSingleton.findOne(`SELECT d.* FROM diseases d INNER JOIN risksfordisease rdf ON d.pk_disease = rdf.fk_disease WHERE d.status = ${EStatus.ACTIVE} AND rdf.fk_riskfactor = ${symptom}`);
+        const result = await PgSingleton.findOne(`SELECT d.* FROM diseases d INNER JOIN symptomsfordesease sdf ON d.pk_disease = sdf.fk_disease  WHERE d.status = ${EStatus.ACTIVE} AND sdf.fk_symptom = ${symptom}`);
         if(!result)
             throw new ResponseError("Error!", "Not founded");
         return await convert(result, 'one');
