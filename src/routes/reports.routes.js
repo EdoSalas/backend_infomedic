@@ -27,4 +27,24 @@ router.post('/diseasesForUser', jsonParser, async (req, res) => {
     }
 });
 
+router.post('/diseasesForRegion', jsonParser, async (req, res) => {
+    try {
+        const { region, type } = req.body;
+        return res.status(200).json(
+            new BaseResponse(
+                "Reports",
+                "Possible diseases of the region",
+                await reports.diseasesForRegion(region, type)
+            )
+        );
+    } catch (error) {
+        return res.status(400).json(
+            new ResponseError(
+                "Reports",
+                "Error in reports.routes.js exec router.post('/diseasesForRegion')"
+            )
+        );
+    }
+});
+
 export default router;
