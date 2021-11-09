@@ -111,8 +111,8 @@ router.post('/credenciales', jsonParser, async (req, res) => {
 
 router.put('/', jsonParser, async (req, res) => {
     try {
-        const { id, name, lastname, email, canton } = req.body;
-        const user = new Users("", id, name, lastname, "", "", email, EType.USER, "", EStatus.ACTIVE, canton, "")
+        const { id, name, lastname, email, canton, dateOfBirth } = req.body;
+        const user = new Users("", id, name, lastname, dateOfBirth, "", email, EType.USER, "", EStatus.ACTIVE, canton, "")
         return res.status(200).json(
             new BaseResponse(
                 "Users",

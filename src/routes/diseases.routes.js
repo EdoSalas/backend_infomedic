@@ -88,6 +88,26 @@ router.get('/:disease/name', async (req, res) => {
     }
 });
 
+router.get('/:symptom/symptom', async (req, res) => {
+    try {
+        const { symptom } = req.params;
+        return res.status(200).json(
+            new BaseResponse(
+                "Diseases",
+                "Diseases founded",
+                await diseasesCtrl.getBySymptom(symptom)
+            )
+        );
+    } catch (error) {
+        return res.status(400).json(
+            new ResponseError(
+                "Diseases",
+                "Error in diseases.routes.js exec router.get('/:symptom/symptom')"
+            )
+        );
+    }
+});
+
 router.put('/', jsonParser, async (req, res) => {
     try {
         const { id, name } = req.body;

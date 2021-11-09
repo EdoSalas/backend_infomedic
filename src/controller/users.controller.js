@@ -145,7 +145,7 @@ export const getByCredential = async (user) => {
 export const update = async (user) => {
     try {
         const result = await PgSingleton.update(
-            `UPDATE users SET name = '${user.name}', lastnames = '${user.lastname}', email = '${user.email}', fk_canton = ${user.canton} WHERE id = '${user.idNumber}'`,
+            `UPDATE users SET name = '${user.name}', lastnames = '${user.lastname}', email = '${user.email}', fk_canton = ${user.canton}, dateofbirth = ${user.dateOfBirth} WHERE id = '${user.idNumber}'`,
             `SELECT u.*, c."name" as canton, p."name" as province, r."name" as region
             FROM users u 
             INNER JOIN cantons c ON u.fk_canton = c.pk_canton 
