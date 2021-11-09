@@ -13,7 +13,7 @@ router.post('/diseasesForUser', jsonParser, async (req, res) => {
         return res.status(200).json(
             new BaseResponse(
                 "Reports",
-                "Diseases For User",
+                "Possible diseases of the user",
                 await reports.diseasesForUser(user)
             )
         );
