@@ -83,7 +83,9 @@ export const getByName = async (name) => {
 
 export const update = async (riskfactor) => {
     try {
-        const riskFactor = await PgSingleton.findOne(``);
+        const riskFactor = await PgSingleton.findOne(`SELECT rf.* FROM riskfactors rf WHERE rf.name = '${riskfactor.name}'`);
+        if(riskFactor)
+            throw new ResponseError("Error!", "Already exist!");
         const result = await PgSingleton.update(
             `UPDATE riskfactors SET name = '${riskfactor.name}' WHERE pk_riskfactor = ${riskfactor.id}`,
             `SELECT rf.* FROM riskfactors rf WHERE rf.pk_riskfactor = ${riskfactor.id}`

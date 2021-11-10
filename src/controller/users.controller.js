@@ -51,6 +51,19 @@ const convert = async (user, type) => {
 
 export const save = async (user) => {
     try {
+        const u = await PgSingleton.findOne(`SELECT u.* FROM users u WHERE u.id = ${user.idNumber}`);
+        if (u) {
+            if (u.status === EStatus.ACTIVE)
+                throw new ResponseError("Error!", "Already exist");
+            const result = await PgSingleton.update(
+                `UPDATE users SET status = ${EStatus.ACTIVE} WHERE id = '${user.idNumber}'`,
+                `SELECT u.*, c."name" as canton, p."name" as province, r."name" as region
+                    FROM users u 
+                    INNER JOIN cantons c ON u.fk_canton = c.pk_canton 
+                    INNER JOIN provinces p ON c.fk_province = p.pk_province 
+                    INNER JOIN regions r ON c.fk_region = r.pk_region WHERE u.status = ${EStatus.ACTIVE} AND u.id = '${user.idNumber}'`);
+            return await convert(result, 'one');
+        }
         const result = await PgSingleton.save(
             `INSERT INTO users (id, name, lastnames, dateofbirth, email, type, status, fk_canton, password, gender) VALUES ('${user.idNumber}', '${user.name}', '${user.lastname}', '${user.dateOfBirth}', '${user.email}', ${EType.USER}, ${EStatus.ACTIVE}, ${user.canton}, '${user.password}', '${user.genero}')`,
             `SELECT u.*, c."name" as canton, p."name" as province, r."name" as region
