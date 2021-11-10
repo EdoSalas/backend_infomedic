@@ -85,7 +85,7 @@ export const diseasesForRegion = async (id, initDate, finalDate) => {
 export const symptomsForDisease = async (disease) => {
     try {
         const symptoms = await symptomCtrl.getByDisease(disease);
-        if(!symptoms)
+        if (!symptoms)
             throw new ResponseError("Error!", "Not symptoms founded");
         return symptoms;
     } catch (error) {
@@ -96,9 +96,17 @@ export const symptomsForDisease = async (disease) => {
 export const diseaseForSymptoms = async (symptom) => {
     try {
         const diseases = await diseasesCtrl.getBySymptom(symptom);
-        if(!diseases)
+        if (!diseases)
             throw new ResponseError("Error!", "Not symptoms founded");
         return diseases;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const moreRiskFactors = async (place, type) => {
+    try {
+        const diseases = await PgSingleton.findOne(``);
     } catch (error) {
         throw error;
     }

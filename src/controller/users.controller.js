@@ -52,7 +52,7 @@ const convert = async (user, type) => {
 
 export const save = async (user) => {
     try {
-        const u = await PgSingleton.findOne(`SELECT u.* FROM users u WHERE u.id = ${user.idNumber}`);
+        const u = await PgSingleton.findOne(`SELECT u.* FROM users u WHERE u.id = '${user.idNumber}'`);
         if (u) {
             if (u.status === EStatus.ACTIVE)
                 throw new ResponseError("Error!", "Already exist");

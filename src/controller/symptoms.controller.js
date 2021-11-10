@@ -28,7 +28,7 @@ const convert = async (symptom, type) => {
 
 export const save = async (symptom) => {
     try {
-        const symptoms = await PgSingleton.findOne(`SELECT s.* FROM symptoms s WHERE s.name = ${symptom.name} AND s.description = ${symptom.description}`);
+        const symptoms = await PgSingleton.findOne(`SELECT s.* FROM symptoms s WHERE s.name = '${symptom.name}' AND s.description = '${symptom.description}'`);
         if (symptoms) {
             if (symptom.status === EStatus.ACTIVE)
                 throw new ResponseError("Error!", "Already exist!");
@@ -91,7 +91,7 @@ export const getByDisease = async (disease) => {
 
 export const update = async (symptom) => {
     try {
-        const symptoms = await PgSingleton.findOne(`SELECT s.* FROM symptoms s WHERE s.name = ${symptom.name}`);
+        const symptoms = await PgSingleton.findOne(`SELECT s.* FROM symptoms s WHERE s.name = '${symptom.name}'`);
         if (symptoms)
             throw new ResponseError("Error!", "Already exist!");
         const result = await PgSingleton.update(
