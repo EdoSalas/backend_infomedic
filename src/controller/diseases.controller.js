@@ -72,10 +72,10 @@ export const getByName = async (name) => {
 
 export const getByriskFactor = async (riskFactor) => {
     try {
-        const result = await PgSingleton.findOne(`SELECT d.* FROM diseases d INNER JOIN risksfordisease rdf ON d.pk_disease = rdf.fk_disease WHERE d.status = ${EStatus.ACTIVE} AND rdf.fk_riskfactor = ${riskFactor}`);
+        const result = await PgSingleton.find(`SELECT d.* FROM diseases d INNER JOIN risksfordisease rdf ON d.pk_disease = rdf.fk_disease WHERE d.status = ${EStatus.ACTIVE} AND rdf.fk_riskfactor = ${riskFactor}`);
         if(!result)
             throw new ResponseError("Error!", "Not founded");
-        return await convert(result, 'one');
+        return await convert(result, 'more');
     } catch (error) {
         throw error;
     }
@@ -83,10 +83,15 @@ export const getByriskFactor = async (riskFactor) => {
 
 export const getBySymptom = async (symptom) => {
     try {
-        const result = await PgSingleton.findOne(`SELECT d.* FROM diseases d INNER JOIN symptomsfordesease sdf ON d.pk_disease = sdf.fk_disease  WHERE d.status = ${EStatus.ACTIVE} AND sdf.fk_symptom = ${symptom}`);
+        const result = await PgSingleton.find(`
+            SELECT distinct d.*
+            FROM diseases d 
+            INNER JOIN symptomsfordesease sfd ON d.pk_disease = sfd.fk_disease 
+            WHERE sfd.fk_symptom = ${symptom} AND d.status = ${EStatus.ACTIVE}
+        `);
         if(!result)
             throw new ResponseError("Error!", "Not founded");
-        return await convert(result, 'one');
+        return await convert(result, 'more');
     } catch (error) {
         throw error;
     }

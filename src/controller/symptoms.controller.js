@@ -5,7 +5,7 @@ import ResponseError from "../response/ResponseError";
 
 const convert = async (symptom, type) => {
     try {
-        if(type === 'one')
+        if (type === 'one')
             return await new Symptoms(symptom.pk_symptom, symptom.name, symptom.description, symptom.status);
         else {
             // eslint-disable-next-line no-array-constructor
@@ -31,7 +31,7 @@ export const save = async (symptom) => {
         const result = await PgSingleton.save(
             `INSERT INTO symptoms (name, description, status) VALUES ('${symptom.name}', '${symptom.description}', ${EStatus.ACTIVE})`,
             `SELECT s.* FROM symptoms s WHERE s.name = '${symptom.name}' AND s.description = '${symptom.description}' AND s.status = ${EStatus.ACTIVE}`);
-        if(!result)
+        if (!result)
             throw new ResponseError("Error", "Not inserted");
         return await convert(result, 'one');
     } catch (error) {
@@ -42,7 +42,7 @@ export const save = async (symptom) => {
 export const getAll = async () => {
     try {
         const result = await PgSingleton.find(`SELECT s.* FROM symptoms s WHERE s.status = ${EStatus.ACTIVE}`);
-        if(!result)
+        if (!result)
             throw new ResponseError("Error", "Not found");
         return await convert(result, 'more');
     } catch (error) {
@@ -53,9 +53,25 @@ export const getAll = async () => {
 export const getByID = async (id) => {
     try {
         const result = await PgSingleton.findOne(`SELECT s.* FROM symptoms s WHERE s.status = ${EStatus.ACTIVE} AND s.pk_symptom = ${id}`);
-        if(!result)
+        if (!result)
             throw new ResponseError("Error", "Not found");
         return await convert(result, 'one');
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const getByDisease = async (disease) => {
+    try {
+        const result = await PgSingleton.find(`
+            SELECT distinct s.*
+            FROM symptoms s
+            INNER JOIN symptomsfordesease sfd ON s.pk_symptom = sfd.fk_symptom 
+            WHERE sfd.fk_disease = ${disease} AND s.status = ${EStatus.ACTIVE}
+        `);
+        if (!result)
+            throw new ResponseError("Error", "Not found");
+        return await convert(result, 'more');
     } catch (error) {
         throw error;
     }
@@ -67,7 +83,7 @@ export const update = async (symptom) => {
             `UPDATE symptoms SET name = '${symptom.name}', description = '${symptom.description}' WHERE pk_symptom = ${symptom.id}`,
             `SELECT s.* FROM symptoms s WHERE s.pk_symptom = ${symptom.id} AND s.status = ${EStatus.ACTIVE}`
         )
-        if(!result)
+        if (!result)
             throw new ResponseError("Error", "Not updated");
         return await convert(result, 'one');
     } catch (error) {
@@ -81,7 +97,7 @@ export const delet = async (id) => {
             `UPDATE symptoms SET status = '${EStatus.INACTIVE}' WHERE pk_symptom = ${id}`,
             `SELECT s.* FROM symptoms s WHERE s.pk_symptom = ${id} AND s.status = ${EStatus.INACTIVE}`
         )
-        if(!result)
+        if (!result)
             throw new ResponseError("Error", "Not updated");
         return await convert(result, 'one');
     } catch (error) {

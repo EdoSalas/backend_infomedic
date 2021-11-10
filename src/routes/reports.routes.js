@@ -9,12 +9,12 @@ const router = Router();
 
 router.post('/diseasesForUser', jsonParser, async (req, res) => {
     try {
-        const { user, initDate, finalDate, type } = req.body;
+        const { user, initDate, finalDate } = req.body;
         return res.status(200).json(
             new BaseResponse(
                 "Reports",
                 "Possible diseases of the user",
-                await reports.diseasesForUser(user, initDate, finalDate, type)
+                await reports.diseasesForUser(user, initDate, finalDate)
             )
         );
     } catch (error) {
@@ -29,12 +29,12 @@ router.post('/diseasesForUser', jsonParser, async (req, res) => {
 
 router.post('/diseasesForRegion', jsonParser, async (req, res) => {
     try {
-        const { region, type } = req.body;
+        const { region, initDate, finalDate } = req.body;
         return res.status(200).json(
             new BaseResponse(
                 "Reports",
                 "Possible diseases of the region",
-                await reports.diseasesForRegion(region, type)
+                await reports.diseasesForRegion(region, initDate, finalDate)
             )
         );
     } catch (error) {
@@ -42,6 +42,46 @@ router.post('/diseasesForRegion', jsonParser, async (req, res) => {
             new ResponseError(
                 "Reports",
                 "Error in reports.routes.js exec router.post('/diseasesForRegion')"
+            )
+        );
+    }
+});
+
+router.post('/symptomsForDisease', jsonParser, async (req, res) => {
+    try {
+        const { disease } = req.body;
+        return res.status(200).json(
+            new BaseResponse(
+                "Reports",
+                "Symptoms for Disease",
+                await reports.symptomsForDisease(disease)
+            )
+        ); 
+    } catch (error) {
+        return res.status(400).json(
+            new ResponseError(
+                "Reports",
+                "Error in reports.routes.js exec router.post('/symptomsForDisease')"
+            )
+        );
+    }
+});
+
+router.post('/diseaseForSymptoms', jsonParser, async (req, res) => {
+    try {
+        const { symptom } = req.body;
+        return res.status(200).json(
+            new BaseResponse(
+                "Reports",
+                "Diseases for Symptom",
+                await reports.diseaseForSymptoms(symptom)
+            )
+        ); 
+    } catch (error) {
+        return res.status(400).json(
+            new ResponseError(
+                "Reports",
+                "Error in reports.routes.js exec router.post('/diseaseForSymptoms')"
             )
         );
     }

@@ -5,32 +5,9 @@ import DiseasesForUser from "../model/reports/diseasesForUser.reports";
 import DiseasesForRegion from "../model/reports/diseasesForRegion.reports";
 import * as userCtrl from "./users.controller";
 import * as diseasesCtrl from "./diseases.controller";
+import * as symptomCtrl from "./symptoms.controller";
 
-const diseasesForUserByRiskFactors = async (id) => {
-    try {
-        const user = await userCtrl.getByID(id);
-        if (!user)
-            throw new ResponseError("Error!", "Not user founded");
-
-        const diseases = await PgSingleton.find(`
-            SELECT DISTINCT d.*
-            FROM users u 
-            INNER JOIN riskforusers rfu ON u.pk_user = rfu.fk_user
-            INNER JOIN risksfordisease rfd ON rfu.fk_riskfactor = rfd.fk_riskfactor 
-            INNER JOIN diseases d ON rfd.fk_disease = d.pk_disease 
-            WHERE u.id = '${user.idNumber}' AND u.status = ${EStatus.ACTIVE}
-        `);
-
-        if (!diseases)
-            throw new ResponseError("Error!", "Not diseases founded");
-
-        return new DiseasesForUser(user, diseases);
-    } catch (error) {
-        throw error;
-    }
-};
-
-const diseasesForUserBySymptoms = async (id, initDate, finalDate) => {
+export const diseasesForUser = async (id, initDate, finalDate) => {
     try {
         const user = await userCtrl.getByID(id);
         if (!user)
@@ -39,7 +16,7 @@ const diseasesForUserBySymptoms = async (id, initDate, finalDate) => {
         const allDiseases = await diseasesCtrl.getAll();
         if (!allDiseases)
             throw new ResponseError("Error!", "Not diseases founded");
-        
+
         // eslint-disable-next-line no-array-constructor
         const diseases = new Array();
         await Promise.all(
@@ -56,11 +33,11 @@ const diseasesForUserBySymptoms = async (id, initDate, finalDate) => {
                     INNER JOIN symptomsfordesease sfd ON d.pk_disease = sfd.fk_disease 
                     INNER JOIN symptomsforuser sfu ON sfd.fk_symptom = sfu.fk_symptom 
                     INNER JOIN users u ON sfu.fk_user = u.pk_user 
-                    WHERE u.id = '${user.idNumber}' AND d.pk_disease = ${d.id} AND sfu.date BETWEEN '${initDate}' AND '${finalDate}'
+                    WHERE u.id = '${user.idNumber}' AND u.status = ${EStatus.ACTIVE} AND d.pk_disease = ${d.id} AND sfu.date BETWEEN '${initDate}' AND '${finalDate}'
                 `);
-                if(amountUserSymptoms.symptoms > 0){
-                    const percentage = (amountUserSymptoms.symptoms*100)/amount.symptoms;
-                    if(percentage >= 50){
+                if (amountUserSymptoms.symptoms > 0) {
+                    const percentage = (amountUserSymptoms.symptoms * 100) / amount.symptoms;
+                    if (percentage >= 50) {
                         d['percentage'] = percentage;
                         diseases.push(d);
                     }
@@ -75,21 +52,7 @@ const diseasesForUserBySymptoms = async (id, initDate, finalDate) => {
     }
 };
 
-
-export const diseasesForUser = async (user, initDate, finalDate, type) => {
-    try {
-        if (type === 'symptom')
-            return await diseasesForUserBySymptoms(user, initDate, finalDate);
-        else if (type === 'riskFactor')
-            return await diseasesForUserByRiskFactors(user);
-        else
-            throw new ResponseError("Error!", "Not valid option");
-    } catch (error) {
-        throw error;
-    }
-};
-
-export const diseasesForRegion = async (id, type) => {
+export const diseasesForRegion = async (id, initDate, finalDate) => {
     try {
         const region = await PgSingleton.findOne(`SELECT r.* FROM regions r WHERE r.pk_region = ${id}`);
         if (!region)
@@ -101,7 +64,7 @@ export const diseasesForRegion = async (id, type) => {
         let diseases = new Array();
         await Promise.all(
             users.map(async (u) => {
-                const r = await diseasesForUser(u.idNumber, type);
+                const r = await diseasesForUser(u.idNumber, initDate, finalDate);
                 if (r.diseases.length > 0)
                     return await Promise.all(
                         r.diseases.map(async (d) => {
@@ -114,6 +77,28 @@ export const diseasesForRegion = async (id, type) => {
         if (!diseases)
             throw new ResponseError("Error!", "Not diseases founded");
         return new DiseasesForRegion(region, diseases);
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const symptomsForDisease = async (disease) => {
+    try {
+        const symptoms = await symptomCtrl.getByDisease(disease);
+        if(!symptoms)
+            throw new ResponseError("Error!", "Not symptoms founded");
+        return symptoms;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const diseaseForSymptoms = async (symptom) => {
+    try {
+        const diseases = await diseasesCtrl.getBySymptom(symptom);
+        if(!diseases)
+            throw new ResponseError("Error!", "Not symptoms founded");
+        return diseases;
     } catch (error) {
         throw error;
     }
