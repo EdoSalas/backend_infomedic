@@ -26,6 +26,15 @@ const convert = (disease, type) => {
 
 export const save = async (name) => {
     try {
+        let disease = await PgSingleton.findOne(`SELECT d.* FROM diseases d WHERE d.name = '${name}'`);
+        if(disease){
+            disease = await PgSingleton.update(
+                `UPDATE diseases SET status = ${EStatus.ACTIVE} WHERE pk_disease = ${disease.pk_disease}`,
+                `SELECT d.* FROM diseases d WHERE d.pk_disease = ${disease.pk_disease} AND d.status = ${EStatus.ACTIVE}`
+            );
+            return await convert(disease, 'one');
+        }
+
         const result = await PgSingleton.save(
             `INSERT INTO diseases (name, status) VALUES ('${name}', ${EStatus.ACTIVE})`,
             `SELECT d.* FROM diseases d WHERE d.name = '${name}'`);
@@ -99,6 +108,10 @@ export const getBySymptom = async (symptom) => {
 
 export const update = async (disease) => {
     try {
+        let diseases = await PgSingleton.findOne(`SELECT d.* FROM diseases d WHERE d.name = '${disease.name}'`);
+        if(diseases)
+            throw new ResponseError("Error!", "There is already a disease with that name");
+
         const result = await PgSingleton.update(
             `UPDATE diseases SET name = '${disease.name}' WHERE pk_disease = ${disease.id}`,
             `SELECT d.* FROM diseases d WHERE d.pk_disease = ${disease.id}`

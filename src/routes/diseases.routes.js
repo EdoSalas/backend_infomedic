@@ -20,6 +20,12 @@ router.post('/', jsonParser, async (req, res) => {
             )
         );
     } catch (error) {
+        if (error instanceof ResponseError) {
+            return res.status(400).json(Object.assign(error));
+        }
+        if (error instanceof Error) {
+            return res.status(400).json(Object.assign(error));
+        }
         return res.status(400).json(
             new ResponseError(
                 "Diseases",
@@ -39,6 +45,12 @@ router.get('/', async (req, res) => {
             )
         );
     } catch (error) {
+        if (error instanceof ResponseError) {
+            return res.status(400).json(Object.assign(error));
+        }
+        if (error instanceof Error) {
+            return res.status(400).json(Object.assign(error));
+        }
         return res.status(400).json(
             new ResponseError(
                 "Diseases",
@@ -59,6 +71,12 @@ router.get('/:disease/id', async (req, res) => {
             )
         );
     } catch (error) {
+        if (error instanceof ResponseError) {
+            return res.status(400).json(Object.assign(error));
+        }
+        if (error instanceof Error) {
+            return res.status(400).json(Object.assign(error));
+        }
         return res.status(400).json(
             new ResponseError(
                 "Diseases",
@@ -79,6 +97,12 @@ router.get('/:disease/name', async (req, res) => {
             )
         );
     } catch (error) {
+        if (error instanceof ResponseError) {
+            return res.status(400).json(Object.assign(error));
+        }
+        if (error instanceof Error) {
+            return res.status(400).json(Object.assign(error));
+        }
         return res.status(400).json(
             new ResponseError(
                 "Diseases",
@@ -99,6 +123,12 @@ router.get('/:riskFactor/riskFactor', async (req, res) => {
             )
         );
     } catch (error) {
+        if (error instanceof ResponseError) {
+            return res.status(400).json(Object.assign(error));
+        }
+        if (error instanceof Error) {
+            return res.status(400).json(Object.assign(error));
+        }
         return res.status(400).json(
             new ResponseError(
                 "Diseases",
@@ -119,6 +149,12 @@ router.get('/:symptom/symptom', async (req, res) => {
             )
         );
     } catch (error) {
+        if (error instanceof ResponseError) {
+            return res.status(400).json(Object.assign(error));
+        }
+        if (error instanceof Error) {
+            return res.status(400).json(Object.assign(error));
+        }
         return res.status(400).json(
             new ResponseError(
                 "Diseases",
@@ -139,6 +175,12 @@ router.put('/', jsonParser, async (req, res) => {
             )
         );
     } catch (error) {
+        if (error instanceof ResponseError) {
+            return res.status(400).json(Object.assign(error));
+        }
+        if (error instanceof Error) {
+            return res.status(400).json(Object.assign(error));
+        }
         return res.status(400).json(
             new ResponseError(
                 "Diseases",
@@ -159,6 +201,12 @@ router.put('/delete', jsonParser, async (req, res) => {
             )
         );
     } catch (error) {
+        if (error instanceof ResponseError) {
+            return res.status(400).json(Object.assign(error));
+        }
+        if (error instanceof Error) {
+            return res.status(400).json(Object.assign(error));
+        }
         return res.status(400).json(
             new ResponseError(
                 "Diseases",

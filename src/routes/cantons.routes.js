@@ -19,6 +19,12 @@ router.get('/', async (req, res) => {
             )
         );
     } catch (error) {
+        if (error instanceof ResponseError) {
+            return res.status(400).json(Object.assign(error));
+        }
+        if (error instanceof Error) {
+            return res.status(400).json(Object.assign(error));
+        }
         return res.status(400).json(
             new ResponseError(
                 "Cantons",
@@ -39,6 +45,12 @@ router.get('/:canton/id', async (req, res) => {
             )
         );
     } catch (error) {
+        if (error instanceof ResponseError) {
+            return res.status(400).json(Object.assign(error));
+        }
+        if (error instanceof Error) {
+            return res.status(400).json(Object.assign(error));
+        }
         return res.status(400).json(
             new ResponseError(
                 "Cantons",
@@ -59,6 +71,12 @@ router.get('/:province/province', async (req, res) => {
             )
         );
     } catch (error) {
+        if (error instanceof ResponseError) {
+            return res.status(400).json(Object.assign(error));
+        }
+        if (error instanceof Error) {
+            return res.status(400).json(Object.assign(error));
+        }
         return res.status(400).json(
             new ResponseError(
                 "Cantons",
@@ -79,6 +97,12 @@ router.get('/:region/region', async (req, res) => {
             )
         );
     } catch (error) {
+        if (error instanceof ResponseError) {
+            return res.status(400).json(Object.assign(error));
+        }
+        if (error instanceof Error) {
+            return res.status(400).json(Object.assign(error));
+        }
         return res.status(400).json(
             new ResponseError(
                 "Cantons",

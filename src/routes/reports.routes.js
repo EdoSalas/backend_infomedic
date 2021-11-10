@@ -18,6 +18,12 @@ router.post('/diseasesForUser', jsonParser, async (req, res) => {
             )
         );
     } catch (error) {
+        if (error instanceof ResponseError) {
+            return res.status(400).json(Object.assign(error));
+        }
+        if (error instanceof Error) {
+            return res.status(400).json(Object.assign(error));
+        }
         return res.status(400).json(
             new ResponseError(
                 "Reports",
@@ -38,6 +44,12 @@ router.post('/diseasesForRegion', jsonParser, async (req, res) => {
             )
         );
     } catch (error) {
+        if (error instanceof ResponseError) {
+            return res.status(400).json(Object.assign(error));
+        }
+        if (error instanceof Error) {
+            return res.status(400).json(Object.assign(error));
+        }
         return res.status(400).json(
             new ResponseError(
                 "Reports",
@@ -58,6 +70,12 @@ router.post('/symptomsForDisease', jsonParser, async (req, res) => {
             )
         ); 
     } catch (error) {
+        if (error instanceof ResponseError) {
+            return res.status(400).json(Object.assign(error));
+        }
+        if (error instanceof Error) {
+            return res.status(400).json(Object.assign(error));
+        }
         return res.status(400).json(
             new ResponseError(
                 "Reports",
@@ -78,6 +96,12 @@ router.post('/diseaseForSymptoms', jsonParser, async (req, res) => {
             )
         ); 
     } catch (error) {
+        if (error instanceof ResponseError) {
+            return res.status(400).json(Object.assign(error));
+        }
+        if (error instanceof Error) {
+            return res.status(400).json(Object.assign(error));
+        }
         return res.status(400).json(
             new ResponseError(
                 "Reports",

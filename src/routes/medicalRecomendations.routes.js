@@ -20,6 +20,12 @@ router.post('/', jsonParser, async (req, res) => {
             )
         );
     } catch (error) {
+        if (error instanceof ResponseError) {
+            return res.status(400).json(Object.assign(error));
+        }
+        if (error instanceof Error) {
+            return res.status(400).json(Object.assign(error));
+        }
         return res.status(400).json(
             new ResponseError(
                 "Medical Recomendations",
@@ -39,6 +45,12 @@ router.get('/', async (req, res) => {
             )
         );
     } catch (error) {
+        if (error instanceof ResponseError) {
+            return res.status(400).json(Object.assign(error));
+        }
+        if (error instanceof Error) {
+            return res.status(400).json(Object.assign(error));
+        }
         return res.status(400).json(
             new ResponseError(
                 "Medical Recomendations",
@@ -59,6 +71,12 @@ router.get('/:medicalRecomendation', async (req, res) => {
             )
         );
     } catch (error) {
+        if (error instanceof ResponseError) {
+            return res.status(400).json(Object.assign(error));
+        }
+        if (error instanceof Error) {
+            return res.status(400).json(Object.assign(error));
+        }
         return res.status(400).json(
             new ResponseError(
                 "Medical Recomendations",
@@ -79,6 +97,12 @@ router.put('/', jsonParser, async (req, res) => {
             )
         );
     } catch (error) {
+        if (error instanceof ResponseError) {
+            return res.status(400).json(Object.assign(error));
+        }
+        if (error instanceof Error) {
+            return res.status(400).json(Object.assign(error));
+        }
         return res.status(400).json(
             new ResponseError(
                 "Medical Recomendations",
@@ -99,6 +123,12 @@ router.put('/delete', jsonParser, async (req, res) => {
             )
         );
     } catch (error) {
+        if (error instanceof ResponseError) {
+            return res.status(400).json(Object.assign(error));
+        }
+        if (error instanceof Error) {
+            return res.status(400).json(Object.assign(error));
+        }
         return res.status(400).json(
             new ResponseError(
                 "Medical Recomendations",

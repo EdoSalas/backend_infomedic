@@ -18,6 +18,12 @@ router.post('/', jsonParser, async (req, res) => {
             )
         );
     } catch (error) {
+        if (error instanceof ResponseError) {
+            return res.status(400).json(Object.assign(error));
+        }
+        if (error instanceof Error) {
+            return res.status(400).json(Object.assign(error));
+        }
         return res.status(400).json(
             new ResponseError(
                 "SymptomsForUser",
@@ -38,6 +44,12 @@ router.get('/:user/user', async (req, res) => {
             )
         );
     } catch (error) {
+        if (error instanceof ResponseError) {
+            return res.status(400).json(Object.assign(error));
+        }
+        if (error instanceof Error) {
+            return res.status(400).json(Object.assign(error));
+        }
         return res.status(400).json(
             new ResponseError(
                 "SymptomsForUser",
@@ -58,6 +70,12 @@ router.get('/:symptomsForUser/id', async (req, res) => {
             )
         );
     } catch (error) {
+        if (error instanceof ResponseError) {
+            return res.status(400).json(Object.assign(error));
+        }
+        if (error instanceof Error) {
+            return res.status(400).json(Object.assign(error));
+        }
         return res.status(400).json(
             new ResponseError(
                 "SymptomsForUser",
@@ -78,6 +96,12 @@ router.put('/', jsonParser, async (req, res) => {
             )
         );
     } catch (error) {
+        if (error instanceof ResponseError) {
+            return res.status(400).json(Object.assign(error));
+        }
+        if (error instanceof Error) {
+            return res.status(400).json(Object.assign(error));
+        }
         return res.status(400).json(
             new ResponseError(
                 "SymptomsForUser",
@@ -98,6 +122,12 @@ router.put('/delete', jsonParser, async (req, res) => {
             )
         );
     } catch (error) {
+        if (error instanceof ResponseError) {
+            return res.status(400).json(Object.assign(error));
+        }
+        if (error instanceof Error) {
+            return res.status(400).json(Object.assign(error));
+        }
         return res.status(400).json(
             new ResponseError(
                 "SymptomsForUser",
