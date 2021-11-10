@@ -53,7 +53,7 @@ export const save = async (symptom) => {
 
 export const getAll = async () => {
     try {
-        const result = await PgSingleton.find(`SELECT s.* FROM symptoms s WHERE s.status = ${EStatus.ACTIVE}`);
+        const result = await PgSingleton.find(`SELECT s.* FROM symptoms s WHERE s.status = ${EStatus.ACTIVE} ORDER BY s.name`);
         if (!result)
             throw new ResponseError("Error", "Not found");
         return await convert(result, 'more');
