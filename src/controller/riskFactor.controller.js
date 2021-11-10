@@ -26,6 +26,17 @@ const convert = (riskFactor, type) => {
 
 export const save = async (name) => {
     try {
+        let riskFactor = await PgSingleton.findOne(`SELECT rf.* FROM riskfactors rf WHERE rf.name = '${name}'`);
+        if(riskFactor){
+            if(riskFactor.status === EStatus.ACTIVE)
+                throw new ResponseError("Error!", "Already exist!");
+            
+            riskFactor = await PgSingleton.update(
+                `UPDATE riskfactors SET status = ${EStatus.ACTIVE} WHERE pk_riskfactor = ${riskFactor.pk_riskfactor}`,
+                `SELECT rf.* FROM riskfactors rf WHERE rf.pk_riskfactor = ${riskFactor.pk_riskfactor} AND rf.status = ${EStatus.ACTIVE}`
+            );
+            return await convert(riskFactor, 'one');
+        }
         const result = await PgSingleton.save(
             `INSERT INTO riskfactors (name, status) VALUES ('${name}', ${EStatus.ACTIVE})`,
             `SELECT rf.* FROM riskfactors rf WHERE rf.name = '${name}'`);
@@ -72,6 +83,7 @@ export const getByName = async (name) => {
 
 export const update = async (riskfactor) => {
     try {
+        const riskFactor = await PgSingleton.findOne(``);
         const result = await PgSingleton.update(
             `UPDATE riskfactors SET name = '${riskfactor.name}' WHERE pk_riskfactor = ${riskfactor.id}`,
             `SELECT rf.* FROM riskfactors rf WHERE rf.pk_riskfactor = ${riskfactor.id}`

@@ -28,6 +28,16 @@ const convert = async (medRecomendation, type) => {
 
 export const save = async (md) => {
     try {
+        const medicalRecomendation = await PgSingleton.findOne(`SELECT m.* FROM medicalrecomendations m WHERE m.title = '${md.title}' AND m.description = '${md.description}'`);
+        if (medicalRecomendation) {
+            if (medicalRecomendation.status === EStatus.ACTIVE)
+                throw new ResponseError("Error!", "Already exist!");
+            const result = await PgSingleton.update(
+                `UPDATE medicalrecomendations SET status = ${EStatus.ACTIVE} WHERE pk_medrecomendation = ${medicalRecomendation.pk_medrecomendation}`,
+                `SELECT m.* FROM medicalrecomendations m WHERE m.pk_medrecomendation = ${medicalRecomendation.pk_medrecomendation}`);
+            return await convert(result, 'one');
+        }
+
         const result = await PgSingleton.save(
             `INSERT INTO medicalrecomendations (title, description, status) VALUES ('${md.title}', '${md.description}', ${EStatus.ACTIVE})`,
             `SELECT m.* FROM medicalrecomendations m WHERE m.title = '${md.title}' AND m.description = '${md.description}' AND m.status = ${EStatus.ACTIVE}`
@@ -64,6 +74,9 @@ export const getByID = async (id) => {
 
 export const update = async (medicalRecomendations) => {
     try {
+        const medicalRecomendation = await PgSingleton.findOne(`SELECT m.* FROM medicalrecomendations m WHERE m.title = '${medicalRecomendations.title}' AND m.description = '${medicalRecomendations.description}'`)
+        if(medicalRecomendation)
+            throw new ResponseError("Error!", "There is already a medicalRecomendation");
         const result = await PgSingleton.update(
             `UPDATE medicalrecomendations SET title = '${medicalRecomendations.title}', description = '${medicalRecomendations.description}' WHERE pk_medrecomendation = ${medicalRecomendations.id}`,
             `SELECT m.* FROM medicalrecomendations m WHERE m.pk_medrecomendation = ${medicalRecomendations.id}`);

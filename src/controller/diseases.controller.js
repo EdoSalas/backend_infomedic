@@ -111,7 +111,7 @@ export const getBySymptom = async (symptom) => {
 
 export const update = async (disease) => {
     try {
-        let diseases = await PgSingleton.findOne(`SELECT d.* FROM diseases d WHERE d.name = '${disease.name}'`);
+        const diseases = await PgSingleton.findOne(`SELECT d.* FROM diseases d WHERE d.name = '${disease.name}'`);
         if(diseases)
             throw new ResponseError("Error!", "There is already a disease with that name");
 
