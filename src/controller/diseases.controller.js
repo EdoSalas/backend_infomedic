@@ -28,6 +28,9 @@ export const save = async (name) => {
     try {
         let disease = await PgSingleton.findOne(`SELECT d.* FROM diseases d WHERE d.name = '${name}'`);
         if(disease){
+            if(disease.status === EStatus.ACTIVE)
+                throw new ResponseError("Error!", "Already exist!");
+            
             disease = await PgSingleton.update(
                 `UPDATE diseases SET status = ${EStatus.ACTIVE} WHERE pk_disease = ${disease.pk_disease}`,
                 `SELECT d.* FROM diseases d WHERE d.pk_disease = ${disease.pk_disease} AND d.status = ${EStatus.ACTIVE}`
