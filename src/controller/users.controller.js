@@ -3,6 +3,7 @@ import EStatus from "../model/enums/EStatus";
 import EType from "../model/enums/EType";
 import Users from "../model/users";
 import { ResponseError } from "../response/ResponseError";
+import md5 from "md5";
 
 const convert = async (user, type) => {
     try {
@@ -64,6 +65,7 @@ export const save = async (user) => {
                     INNER JOIN regions r ON c.fk_region = r.pk_region WHERE u.status = ${EStatus.ACTIVE} AND u.id = '${user.idNumber}'`);
             return await convert(result, 'one');
         }
+        user.password = await md5(user.password);
         const result = await PgSingleton.save(
             `INSERT INTO users (id, name, lastnames, dateofbirth, email, type, status, fk_canton, password, gender) VALUES ('${user.idNumber}', '${user.name}', '${user.lastname}', '${user.dateOfBirth}', '${user.email}', ${EType.USER}, ${EStatus.ACTIVE}, ${user.canton}, '${user.password}', '${user.genero}')`,
             `SELECT u.*, c."name" as canton, p."name" as province, r."name" as region
@@ -159,6 +161,7 @@ export const getByGender = async (gender) => {
 
 export const getByCredential = async (user) => {
     try {
+        user.password = await md5(user.password);
         const result = await PgSingleton.findOne(`SELECT u.*, c."name" as canton, p."name" as province, r."name" as region
             FROM users u 
             INNER JOIN cantons c ON u.fk_canton = c.pk_canton 
@@ -191,6 +194,7 @@ export const update = async (user) => {
 
 export const changePassword = async (user) => {
     try {
+        user.password = await md5(user.password);
         const result = await PgSingleton.update(
             `UPDATE users SET password = '${user.password}' WHERE id = '${user.idNumber}'`,
             `SELECT u.*, c."name" as canton, p."name" as province, r."name" as region
