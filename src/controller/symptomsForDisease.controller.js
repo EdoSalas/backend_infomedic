@@ -44,6 +44,16 @@ const convert = (symptomsfordesease, type) => {
 
 export const save = async (disease, symptoms) => {
     try {
+        const sfd = await PgSingleton.findOne(`SELECT sfd.* FROM symptomsfordesease sfd WHERE sfd.fk_disease = ${disease} AND sfd.fk_symptom = ${symptoms}`);
+        if (sfd) {
+            if (sfd.status === EStatus.ACTIVE)
+                throw new ResponseError("Error!", "Already exist");
+            const result = await PgSingleton.update(
+                `UPDATE symptomsfordesease SET status = ${EStatus.ACTIVE} WHERE pk_symptomfordesease = ${sfd.pk_symptomfordesease}`,
+                `SELECT sfd.* FROM symptomsfordesease sfd WHERE sfd.pk_symptomfordesease = ${sfd.pk_symptomfordesease}`
+            );
+            return await convert(result, 'one');
+        }
         const result = await PgSingleton.save(
             `INSERT INTO symptomsfordesease (fk_disease, fk_symptom, status) VALUES (${disease}, ${symptoms}, ${EStatus.ACTIVE})`,
             `SELECT sfd.* FROM symptomsfordesease sfd WHERE sfd.fk_disease = ${disease} AND sfd.fk_symptom = ${symptoms}`
@@ -90,6 +100,12 @@ export const getByID = async (id) => {
 
 export const update = async (id, symptoms) => {
     try {
+        const sfd = await PgSingleton.findOne(`SELECT sfd.* FROM symptomsfordesease sfd WHERE sfd.pk_symptomfordesease = ${id}`);
+        if (!sfd)
+            throw new ResponseError("Error!", "Not exist");
+        const exist = await PgSingleton.findOne(`SELECT sfd.* FROM symptomsfordesease sfd WHERE sfd.fk_symptom = ${symptoms} AND sfd.fk_disease = ${sfd.fk_disease}`);
+        if (exist)
+            throw new ResponseError("Error!", "Already exist!");
         const result = await PgSingleton.update(
             `UPDATE symptomsfordesease SET fk_symptom = ${symptoms} WHERE pk_symptomfordesease = ${id}`,
             `SELECT sfd.* FROM symptomsfordesease sfd WHERE sfd.pk_symptomfordesease = ${id} AND sfd.status = ${EStatus.ACTIVE}`
