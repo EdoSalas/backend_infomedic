@@ -100,6 +100,7 @@ export const getBySymptom = async (symptom) => {
             FROM diseases d 
             INNER JOIN symptomsfordesease sfd ON d.pk_disease = sfd.fk_disease 
             WHERE sfd.fk_symptom = ${symptom} AND d.status = ${EStatus.ACTIVE}
+            ORDER BY d.name
         `);
         if(!result)
             throw new ResponseError("Error!", "Not founded");
