@@ -52,6 +52,8 @@ export const save = async (disease, symptoms) => {
                 `UPDATE symptomsfordesease SET status = ${EStatus.ACTIVE} WHERE pk_symptomfordesease = ${sfd.pk_symptomfordesease}`,
                 `SELECT sfd.* FROM symptomsfordesease sfd WHERE sfd.pk_symptomfordesease = ${sfd.pk_symptomfordesease}`
             );
+            result['diseaseInfo'] = await diseaseCtrl.getByID(result.fk_disease);
+            result['symptomInfo'] = await symptomCtrl.getByID(result.fk_symptom);
             return await convert(result, 'one');
         }
         const result = await PgSingleton.save(
@@ -70,7 +72,13 @@ export const save = async (disease, symptoms) => {
 
 export const getDiseaseSymptoms = async (disease) => {
     try {
-        const result = await PgSingleton.find(`SELECT sfd.* FROM symptomsfordesease sfd WHERE sfd.status = ${EStatus.ACTIVE} AND sfd.fk_disease = ${disease}`);
+        const result = await PgSingleton.find(`
+            SELECT sfd.* 
+            FROM symptomsfordesease sfd 
+            INNER JOIN symptoms s ON sfd.fk_symptom = s.pk_symptom 
+            WHERE sfd.status = ${EStatus.ACTIVE} AND sfd.fk_disease = ${disease}
+            ORDER BY s.name
+        `);
         if (!result)
             throw new ResponseError("Error!", "Not founded");
         result['diseaseInfo'] = await diseaseCtrl.getByID(result[0].fk_disease);

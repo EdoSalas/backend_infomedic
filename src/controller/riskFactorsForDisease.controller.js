@@ -44,6 +44,18 @@ const convert = (riskFactorForDisease, type) => {
 
 export const save = async (disease, riskFactor) => {
     try {
+        const rfd = await PgSingleton.findOne(`SELECT rfd.* FROM risksfordisease rfd WHERE rfd.fk_disease = ${disease} AND rfd.fk_riskfactor = ${riskFactor}`);
+        if (rfd) {
+            if (rfd.status === EStatus.ACTIVE)
+                throw new ResponseError("Error!", "Already exist");
+            const result = await PgSingleton.update(
+                `UPDATE risksfordisease SET status = ${EStatus.ACTIVE} WHERE pk_risksfordisease = ${rfd.pk_risksfordisease}`,
+                `SELECT rfd.* FROM risksfordisease rfd WHERE rfd.pk_risksfordisease = ${rfd.pk_risksfordisease}`
+            );
+            result['diseaseInfo'] = await diseaseCtrl.getByID(result.fk_disease);
+            result['riskInfo'] = await riskCtrl.getByID(result.fk_riskfactor);
+            return await convert(result, 'one');
+        }
         const result = await PgSingleton.save(
             `INSERT INTO risksfordisease (fk_disease, fk_riskfactor, status) VALUES (${disease}, ${riskFactor}, ${EStatus.ACTIVE})`,
             `SELECT rfd.* FROM risksfordisease rfd WHERE rfd.fk_disease = ${disease} AND rfd.fk_riskfactor = ${riskFactor}`
@@ -60,7 +72,13 @@ export const save = async (disease, riskFactor) => {
 
 export const getDiseaseRiskFactors = async (disease) => {
     try {
-        const result = await PgSingleton.find(`SELECT rfd.* FROM risksfordisease rfd WHERE rfd.status = ${EStatus.ACTIVE} AND rfd.fk_disease = ${disease}`);
+        const result = await PgSingleton.find(`
+            SELECT rfd.* 
+            FROM risksfordisease rfd 
+            INNER JOIN riskfactors r ON rfd.fk_riskfactor = r.pk_riskfactor 
+            WHERE rfd.status = ${EStatus.ACTIVE} AND rfd.fk_disease = ${disease}
+            ORDER BY r.name
+        `);
         if (!result)
             throw new ResponseError("Error!", "Not founded");
         result['diseaseInfo'] = await diseaseCtrl.getByID(result[0].fk_disease);
@@ -90,6 +108,12 @@ export const getByID = async (id) => {
 
 export const update = async (id, riskFactor) => {
     try {
+        const rfd = await PgSingleton.findOne(`SELECT rfd.* FROM risksfordisease rfd WHERE rfd.pk_risksfordisease = ${id}`);
+        if(!rfd)
+            throw new ResponseError("Error!", "Not exist");
+        const exist = await PgSingleton.findOne(`SELECT rfd.* FROM risksfordisease rfd WHERE rfd.fk_riskfactor = ${riskFactor} AND rfd.fk_disease = ${rfd.fk_disease}`);
+        if(exist)
+            throw new ResponseError("Error!", "Already exist");
         const result = await PgSingleton.update(
             `UPDATE risksfordisease SET fk_riskfactor = ${riskFactor} WHERE pk_risksfordisease = ${id}`,
             `SELECT rfd.* FROM risksfordisease rfd WHERE rfd.pk_risksfordisease = ${id} AND rfd.status = ${EStatus.ACTIVE}`
