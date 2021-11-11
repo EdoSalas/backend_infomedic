@@ -62,7 +62,13 @@ export const save = async (user, date, symptoms) => {
 
 export const getUserSymptoms = async (user) => {
     try {
-        const result = await PgSingleton.find(`SELECT sfu.* FROM symptomsforuser sfu WHERE sfu.status = ${EStatus.ACTIVE} AND sfu.fk_user = ${user}`);
+        const result = await PgSingleton.find(`
+            SELECT sfu.* 
+            FROM symptomsforuser sfu 
+            INNER JOIN symptoms s ON sfu.fk_symptom = s.pk_symptom 
+            WHERE sfu.status = ${EStatus.ACTIVE} AND sfu.fk_user = ${user}
+            ORDER BY s.name
+        `);
         if (!result)
             throw new ResponseError("Error!", "Not founded");
         result['userInfo'] = await userCtrl.getByPK(result[0].fk_user);

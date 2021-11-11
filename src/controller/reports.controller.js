@@ -6,6 +6,7 @@ import DiseasesForRegion from "../model/reports/diseasesForRegion.reports";
 import * as userCtrl from "./users.controller";
 import * as diseasesCtrl from "./diseases.controller";
 import * as symptomCtrl from "./symptoms.controller";
+import * as cantonCtrl from "./cantons.controller";
 
 export const diseasesForUser = async (id, initDate, finalDate) => {
     try {
@@ -104,9 +105,26 @@ export const diseaseForSymptoms = async (symptom) => {
     }
 };
 
-export const moreRiskFactors = async (place, type) => {
+export const moreSymptoms = async () => {
     try {
-        const diseases = await PgSingleton.findOne(``);
+        const cantons = await cantonCtrl.getAll();
+        // eslint-disable-next-line no-array-constructor
+        const canton = new Array();
+        await Promise.all(
+            cantons.map(async (c) => {
+                const amountByCanton = await PgSingleton.findOne(`
+                    SELECT COUNT(distinct s.fk_symptom) as amount
+                    FROM cantons c 
+                    INNER JOIN users u ON c.pk_canton = u.fk_canton 
+                    INNER JOIN symptomsforuser s ON u.pk_user = s.fk_user 
+                    WHERE c.pk_canton = ${c.id}
+                `);
+                c['amount'] = amountByCanton.amount;
+                canton.push(c);
+            })
+        );
+        canton.sort((a, b) => b.amount - a.amount);
+        return canton;
     } catch (error) {
         throw error;
     }

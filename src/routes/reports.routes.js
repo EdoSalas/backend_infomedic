@@ -111,4 +111,27 @@ router.post('/diseaseForSymptoms', jsonParser, async (req, res) => {
     }
 });
 
+router.get('/cantonWithMoreSymptoms', jsonParser, async (req, res) => {
+    try {
+        return res.status(200).json(
+            new BaseResponse(
+                "Reports",
+                "Canton with more symptoms",
+                await reports.moreSymptoms()
+            )
+        ); 
+    } catch (error) {
+        if (error instanceof ResponseError) 
+            return res.status(400).json(Object.assign(error));
+        if (error instanceof Error)
+            return res.status(400).json(Object.assign(error));
+        return res.status(400).json(
+            new ResponseError(
+                "Reports",
+                "Error in reports.routes.js exec router.post('/cantonWithMoreSymptoms')"
+            )
+        );
+    }
+});
+
 export default router;
