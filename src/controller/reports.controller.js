@@ -38,7 +38,7 @@ export const diseasesForUser = async (id, initDate, finalDate) => {
                 `);
                 if (amountUserSymptoms.symptoms > 0) {
                     const percentage = (amountUserSymptoms.symptoms * 100) / amount.symptoms;
-                    if (percentage >= 50) {
+                    if (percentage >= 75) {
                         d['percentage'] = percentage;
                         diseases.push(d);
                     }
