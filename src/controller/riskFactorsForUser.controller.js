@@ -102,10 +102,10 @@ export const getByID = async (id) => {
 
 export const update = async (id, riskFactor) => {
     try {
-        const rfu = await PgSingleton.findOne(`SELECT rfu.* FROM riskforusers rfu WHERE rfu.fk_riskfactor = ${id}`);
+        const rfu = await PgSingleton.findOne(`SELECT rfu.* FROM riskforusers rfu WHERE rfu.pk_riskforusers = ${id}`);
         if (!rfu)
             throw new ResponseError("Error!", "Not exist");
-        const exist = await PgSingleton.findOne(`SELECT rfu.* FROM riskforusers rfu WHERE rfu.fk_riskfactor = ${riskFactor} AND rfu.pk_riskforusers = ${rfu.pk_riskforusers}`);
+        const exist = await PgSingleton.findOne(`SELECT rfu.* FROM riskforusers rfu WHERE rfu.fk_riskfactor = ${riskFactor} AND rfu.fk_user = ${rfu.fk_user}`);
         if (exist)
             throw new ResponseError("Error!", "Already exist");
         const result = await PgSingleton.update(
