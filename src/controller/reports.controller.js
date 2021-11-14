@@ -183,3 +183,36 @@ export const regionsWithMoreSymptoms = async (initDate, finalDate) => {
         throw error;
     }
 };
+
+export const cantonWithRiskFactor = async (riskFactor) => {
+    try {
+        const cantons = await cantonCtrl.getByRiskFactor(riskFactor);
+        if(!cantons)
+            throw new ResponseError("Error!", "Not founded");
+        return cantons;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const provinceWithRiskFactor = async (riskFactor) => {
+    try {
+        const provinces = await provinceCtrl.getByRiskFactor(riskFactor);
+        if(!provinces)
+            throw new ResponseError("Error!", "Not founded");
+        return provinces;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const regionWithRiskFactor = async (riskFactor) => {
+    try {
+        const regions = await regionCtrl.getByRiskFactor(riskFactor);
+        if(!regions)
+            throw new ResponseError("Error!", "Not founded");
+        return regions;
+    } catch (error) {
+        throw error;
+    }
+};

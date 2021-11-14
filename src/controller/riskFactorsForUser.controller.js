@@ -1,8 +1,6 @@
 import { PgSingleton } from "../singleton/pgSingleton";
 import ResponseError from "../response/ResponseError";
 import EStatus from "../model/enums/EStatus";
-import Users from "../model/users";
-import RiskFactors from "../model/riskFactors";
 import RiskFactorsForUser from "../model/riskFactorForUser";
 import * as userCtrl from "./users.controller";
 import * as riskCtrl from "./riskFactor.controller";
@@ -46,6 +44,18 @@ const convert = (riskFactorForUser, type) => {
 
 export const save = async (user, riskFactor) => {
     try {
+        const rfu = await PgSingleton.findOne(`SELECT rfu.* FROM riskforusers rfu WHERE rfu.fk_user = ${user} AND rfu.fk_riskfactor = ${riskFactor}`);
+        if (rfu) {
+            if (rfu.status === EStatus.ACTIVE)
+                throw new ResponseError("Error!", "Already exist");
+            const result = await PgSingleton.update(
+                `UPDATE riskforusers SET status = ${EStatus.ACTIVE} WHERE pk_riskforusers = ${rfu.pk_riskforusers}`,
+                `SELECT rfu.* FROM riskforusers rfu WHERE rfu.pk_riskforusers = ${rfu.pk_riskforusers}`
+            );
+            result['userInfo'] = await userCtrl.getByPK(result.fk_user);
+            result['riskInfo'] = await riskCtrl.getByID(result.fk_riskfactor);
+            return await convert(result, 'one');
+        }
         const result = await PgSingleton.save(
             `INSERT INTO riskforusers (fk_user, fk_riskfactor, status) VALUES (${user}, ${riskFactor}, ${EStatus.ACTIVE})`,
             `SELECT rfu.* FROM riskforusers rfu WHERE rfu.fk_user = ${user} AND rfu.fk_riskfactor = ${riskFactor}`
@@ -92,6 +102,12 @@ export const getByID = async (id) => {
 
 export const update = async (id, riskFactor) => {
     try {
+        const rfu = await PgSingleton.findOne(`SELECT rfu.* FROM riskforusers rfu WHERE rfu.fk_riskfactor = ${id}`);
+        if (!rfu)
+            throw new ResponseError("Error!", "Not exist");
+        const exist = await PgSingleton.findOne(`SELECT rfu.* FROM riskforusers rfu WHERE rfu.fk_riskfactor = ${riskFactor} AND rfu.pk_riskforusers = ${rfu.pk_riskforusers}`);
+        if (exist)
+            throw new ResponseError("Error!", "Already exist");
         const result = await PgSingleton.update(
             `UPDATE riskforusers SET fk_riskfactor = ${riskFactor} WHERE pk_riskforusers = ${id}`,
             `SELECT rfu.* FROM riskforusers rfu WHERE rfu.pk_riskforusers = ${id} AND rfu.status = ${EStatus.ACTIVE}`

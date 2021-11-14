@@ -56,3 +56,22 @@ export const getByName = async (name) => {
         throw error;
     }
 };
+
+export const getByRiskFactor = async (riskFactor) => {
+    try {
+        const result = await PgSingleton.find(`
+            SELECT p.*
+            FROM provinces p 
+            INNER JOIN cantons c ON p.pk_province = c.fk_province 
+            INNER JOIN users u ON c.pk_canton = u.fk_canton 
+            INNER JOIN riskforusers rfu ON rfu.fk_user = u.pk_user 
+            WHERE rfu.fk_riskfactor = ${riskFactor}
+            ORDER BY p."name" 
+        `);
+        if (!result)
+            throw new ResponseError("Error", "Not founded");
+        return await convert(result, 'more');
+    } catch (error) {
+        throw error;
+    }
+};

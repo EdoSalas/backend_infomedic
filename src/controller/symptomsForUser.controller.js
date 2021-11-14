@@ -46,6 +46,18 @@ const convert = (symptomsForUser, type) => {
 
 export const save = async (user, date, symptoms) => {
     try {
+        const sfu = await PgSingleton.findOne(`SELECT sfu.* FROM symptomsforuser sfu WHERE sfu.fk_user = ${user} AND sfu.date = '${date}' AND sfu.fk_symptom = ${symptoms}`);
+        if (sfu) {
+            if (sfu.status === EStatus.ACTIVE)
+                throw new ResponseError("Error!", "Already exist");
+            const result = await PgSingleton.update(
+                `UPDATE symptomsforuser SET status = ${EStatus.ACTIVE} WHERE pk_symptomforuser = ${sfu.pk_symptomforuser}`,
+                `SELECT sfu.* FROM symptomsforuser sfu WHERE sfu.pk_symptomforuser = ${sfu.pk_symptomforuser}`
+            );
+            result['userInfo'] = await userCtrl.getByPK(result.fk_user);
+            result['symptomInfo'] = await symptomCtrl.getByID(result.fk_symptom);
+            return await convert(result, 'one');
+        }
         const result = await PgSingleton.save(
             `INSERT INTO symptomsforuser (fk_user, date, fk_symptom, status) VALUES (${user}, '${date}', ${symptoms}, ${EStatus.ACTIVE})`,
             `SELECT sfu.* FROM symptomsforuser sfu WHERE sfu.fk_user = ${user} AND sfu.fk_symptom = ${symptoms}`
@@ -98,6 +110,12 @@ export const getByID = async (id) => {
 
 export const update = async (id, symptoms) => {
     try {
+        const sfu = await PgSingleton.findOne(`SELECT sfu.* FROM symptomsforuser sfu WHERE sfu.pk_symptomforuser = ${id}`);
+        if (!sfu)
+            throw new ResponseError("Error!", "Not exist!");
+        const exist = await PgSingleton.findOne(`SELECT sfu.* FROM symptomsforuser sfu WHERE sfu.fk_symptom = ${symptoms} AND sfu.fk_user = ${sfu.fk_user}`);
+        if (exist)
+            throw new ResponseError("Error!", "Already exist");
         const result = await PgSingleton.update(
             `UPDATE symptomsforuser SET fk_symptom = ${symptoms} WHERE pk_symptomforuser = ${id}`,
             `SELECT sfu.* FROM symptomsforuser sfu WHERE sfu.pk_symptomforuser = ${id} AND sfu.status = ${EStatus.ACTIVE}`
