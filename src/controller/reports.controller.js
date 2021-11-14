@@ -7,6 +7,8 @@ import * as userCtrl from "./users.controller";
 import * as diseasesCtrl from "./diseases.controller";
 import * as symptomCtrl from "./symptoms.controller";
 import * as cantonCtrl from "./cantons.controller";
+import * as provinceCtrl from "./provinces.controller";
+import * as regionCtrl from "./regions.controller";
 
 export const diseasesForUser = async (id, initDate, finalDate) => {
     try {
@@ -105,7 +107,7 @@ export const diseaseForSymptoms = async (symptom) => {
     }
 };
 
-export const moreSymptoms = async () => {
+export const cantonWithMoreSymptoms = async (initDate, finalDate) => {
     try {
         const cantons = await cantonCtrl.getAll();
         // eslint-disable-next-line no-array-constructor
@@ -117,7 +119,7 @@ export const moreSymptoms = async () => {
                     FROM cantons c 
                     INNER JOIN users u ON c.pk_canton = u.fk_canton 
                     INNER JOIN symptomsforuser s ON u.pk_user = s.fk_user 
-                    WHERE c.pk_canton = ${c.id}
+                    WHERE c.pk_canton = ${c.id} AND s.date BETWEEN '${initDate}' AND '${finalDate}'
                 `);
                 c['amount'] = amountByCanton.amount;
                 canton.push(c);
@@ -125,6 +127,58 @@ export const moreSymptoms = async () => {
         );
         canton.sort((a, b) => b.amount - a.amount);
         return canton;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const provinceWithMoreSymptoms = async (initDate, finalDate) => {
+    try {
+        const provinces = await provinceCtrl.getAll();
+        // eslint-disable-next-line no-array-constructor
+        const province = new Array();
+        await Promise.all(
+            provinces.map(async (p) => {
+                const amountByProvince = await PgSingleton.findOne(`
+                    SELECT COUNT(distinct s.fk_symptom) as amount
+                    FROM provinces p 
+                    INNER JOIN cantons c ON p.pk_province = c.fk_province 
+                    INNER JOIN users u ON c.pk_canton = u.fk_canton 
+                    INNER JOIN symptomsforuser s ON u.pk_user = s.fk_user 
+                    WHERE p.pk_province = ${p.id} AND s.date BETWEEN '${initDate}' AND '${finalDate}'
+                `);
+                p['amount'] = amountByProvince.amount;
+                province.push(p);
+            })
+        );
+        province.sort((a, b) => b.amount - a.amount);
+        return province;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const regionsWithMoreSymptoms = async (initDate, finalDate) => {
+    try {
+        const regions = await regionCtrl.getAll();
+        // eslint-disable-next-line no-array-constructor
+        const region = new Array();
+        await Promise.all(
+            regions.map(async (r) => {
+                const amountByRegion = await PgSingleton.findOne(`
+                    SELECT COUNT(distinct s.fk_symptom) as amount
+                    FROM regions r 
+                    INNER JOIN cantons c ON r.pk_region = c.fk_region 
+                    INNER JOIN users u ON c.pk_canton = u.fk_canton 
+                    INNER JOIN symptomsforuser s ON u.pk_user = s.fk_user 
+                    WHERE r.pk_region = ${r.id} AND s.date BETWEEN '${initDate}' AND '${finalDate}'
+                `);
+                r['amount'] = amountByRegion.amount;
+                region.push(r);
+            })
+        );
+        region.sort((a, b) => b.amount - a.amount);
+        return region;
     } catch (error) {
         throw error;
     }
