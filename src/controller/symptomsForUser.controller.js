@@ -135,11 +135,11 @@ export const update = async (id, symptoms) => {
     }
 };
 
-export const delet = async (user, symptom) => {
+export const delet = async (id) => {
     try {
         const result = await PgSingleton.update(
-            `UPDATE symptomsforuser SET status = ${EStatus.INACTIVE} WHERE fk_user = ${user} AND fk_symptom = ${symptom}`,
-            `SELECT sfu.* FROM symptomsforuser sfu WHERE sfu.fk_user = ${user} AND sfu.fk_symptom = ${symptom} AND sfu.status = ${EStatus.INACTIVE}`
+            `UPDATE symptomsforuser SET status = ${EStatus.INACTIVE} WHERE pk_symptomforuser = ${id}`,
+            `SELECT sfu.* FROM symptomsforuser sfu WHERE sfu.pk_symptomforuser = ${id} AND sfu.status = ${EStatus.INACTIVE}`
         );
         if (!result)
             throw new ResponseError("Error!", "Not founded");
