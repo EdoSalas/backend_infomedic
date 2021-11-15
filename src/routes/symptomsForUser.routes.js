@@ -113,12 +113,12 @@ router.put('/', jsonParser, async (req, res) => {
 
 router.put('/delete', jsonParser, async (req, res) => {
     try {
-        const { user, symptom } = req.body;
+        const { id } = req.body;
         return res.status(200).json(
             new BaseResponse(
                 "SymptomsForUser",
                 "SymptomsForUser deleted",
-                await symptomsUserCtrl.delet(user, symptom)
+                await symptomsUserCtrl.delet(id)
             )
         );
     } catch (error) {

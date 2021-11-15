@@ -115,12 +115,12 @@ router.put('/', jsonParser, async (req, res) => {
 
 router.put('/delete', jsonParser, async (req, res) => {
     try {
-        const { user, riskFactor } = req.body;
+        const { id } = req.body;
         return res.status(200).json(
             new BaseResponse(
                 "RiskFactorsForUser",
                 "RiskFactorsForUser deleted",
-                await riskFactorUserCtrl.delet(user, riskFactor)
+                await riskFactorUserCtrl.delet(id)
             )
         );
     } catch (error) {
