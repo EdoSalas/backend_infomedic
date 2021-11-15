@@ -10,7 +10,7 @@ import * as cantonCtrl from "./cantons.controller";
 import * as provinceCtrl from "./provinces.controller";
 import * as regionCtrl from "./regions.controller";
 
-export const diseasesForUser = async (id, initDate, finalDate) => {
+export const diseasesForUser = async (id) => {
     try {
         const user = await userCtrl.getByID(id);
         if (!user)
@@ -36,7 +36,7 @@ export const diseasesForUser = async (id, initDate, finalDate) => {
                     INNER JOIN symptomsfordesease sfd ON d.pk_disease = sfd.fk_disease 
                     INNER JOIN symptomsforuser sfu ON sfd.fk_symptom = sfu.fk_symptom 
                     INNER JOIN users u ON sfu.fk_user = u.pk_user 
-                    WHERE u.id = '${user.idNumber}' AND u.status = ${EStatus.ACTIVE} AND d.pk_disease = ${d.id} AND sfu.date BETWEEN '${initDate}' AND '${finalDate}'
+                    WHERE u.id = '${user.idNumber}' AND u.status = ${EStatus.ACTIVE} AND d.pk_disease = ${d.id}
                 `);
                 if (amountUserSymptoms.symptoms > 0) {
                     const percentage = (amountUserSymptoms.symptoms * 100) / amount.symptoms;

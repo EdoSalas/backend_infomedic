@@ -65,6 +65,16 @@ export class PgSingleton {
         }
     };
 
+    static async erase(update) {
+        console.log(`Execute:\n${update}`);
+        await this.getInstance();
+        try {
+            await this.db.none(update);
+        } catch (error) {
+            throw error;
+        }
+    };
+
     static async delete(del, find) {
         console.log(`Execute:\n${del}`);
         await this.getInstance();

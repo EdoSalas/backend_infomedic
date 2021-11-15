@@ -54,7 +54,6 @@ export const save = async (user, riskFactor) => {
             );
             result['userInfo'] = await userCtrl.getByPK(result.fk_user);
             result['riskInfo'] = await riskCtrl.getByID(result.fk_riskfactor);
-            result['riskInfo']['pk'] = result.pk_riskforusers;
             return await convert(result, 'one');
         }
         const result = await PgSingleton.save(
@@ -79,7 +78,9 @@ export const getUserRiskFactors = async (user) => {
         result['userInfo'] = await userCtrl.getByPK(result[0].fk_user);
         result['riskInfo'] = await Promise.all(
             result.map(async (r) => {
-                return await riskCtrl.getByID(r.fk_riskfactor)
+                const risk = await riskCtrl.getByID(r.fk_riskfactor);
+                risk['pk'] = result.pk_riskforusers;
+                return risk;
             })
         );
         return convert(result, 'all');

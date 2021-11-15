@@ -66,7 +66,6 @@ export const save = async (user, date, symptoms) => {
             throw new ResponseError("Error!", "Not inserted");
         result['userInfo'] = await userCtrl.getByPK(result.fk_user);
         result['symptomInfo'] = await symptomCtrl.getByID(result.fk_symptom);
-        result['symptomInfo']['pk'] = result.pk_symptomforuser;
         return await convert(result, 'one');
     } catch (error) {
         throw error;
@@ -75,6 +74,9 @@ export const save = async (user, date, symptoms) => {
 
 export const getUserSymptoms = async (user) => {
     try {
+        await PgSingleton.erase(
+            `UPDATE symptomsforuser SET status = ${EStatus.INACTIVE} WHERE date <= (SELECT current_date -7)`
+        );
         const result = await PgSingleton.find(`
             SELECT sfu.* 
             FROM symptomsforuser sfu 
@@ -87,7 +89,9 @@ export const getUserSymptoms = async (user) => {
         result['userInfo'] = await userCtrl.getByPK(result[0].fk_user);
         result['symptomInfo'] = await Promise.all(
             result.map(async (s) => {
-                return await symptomCtrl.getByID(s.fk_symptom)
+                const symp = await symptomCtrl.getByID(s.fk_symptom);
+                symp['pk'] = s.pk_symptomforuser;
+                return symp;
             })
         );
         return convert(result, 'all');

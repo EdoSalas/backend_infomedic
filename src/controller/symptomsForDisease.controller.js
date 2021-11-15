@@ -76,7 +76,7 @@ export const getDiseaseSymptoms = async (disease) => {
             SELECT sfd.* 
             FROM symptomsfordesease sfd 
             INNER JOIN symptoms s ON sfd.fk_symptom = s.pk_symptom 
-            WHERE sfd.status = ${EStatus.ACTIVE} AND sfd.fk_disease = ${disease}
+            WHERE sfd.status = ${EStatus.ACTIVE} AND sfd.fk_disease = ${disease} AND s.status = ${EStatus.ACTIVE}
             ORDER BY s.name
         `);
         if (!result)
