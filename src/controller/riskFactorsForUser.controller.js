@@ -54,6 +54,7 @@ export const save = async (user, riskFactor) => {
             );
             result['userInfo'] = await userCtrl.getByPK(result.fk_user);
             result['riskInfo'] = await riskCtrl.getByID(result.fk_riskfactor);
+            result['riskInfo']['pk'] = result.pk_riskforusers;
             return await convert(result, 'one');
         }
         const result = await PgSingleton.save(

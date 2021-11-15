@@ -66,6 +66,7 @@ export const save = async (user, date, symptoms) => {
             throw new ResponseError("Error!", "Not inserted");
         result['userInfo'] = await userCtrl.getByPK(result.fk_user);
         result['symptomInfo'] = await symptomCtrl.getByID(result.fk_symptom);
+        result['symptomInfo']['pk'] = result.pk_symptomforuser;
         return await convert(result, 'one');
     } catch (error) {
         throw error;
