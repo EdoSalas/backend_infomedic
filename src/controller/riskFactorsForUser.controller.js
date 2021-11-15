@@ -79,7 +79,7 @@ export const getUserRiskFactors = async (user) => {
         result['riskInfo'] = await Promise.all(
             result.map(async (r) => {
                 const risk = await riskCtrl.getByID(r.fk_riskfactor);
-                risk['pk'] = result.pk_riskforusers;
+                risk['pk'] = r.pk_riskforusers;
                 return risk;
             })
         );
