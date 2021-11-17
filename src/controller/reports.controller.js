@@ -187,7 +187,7 @@ export const regionsWithMoreSymptoms = async (initDate, finalDate) => {
 export const cantonWithRiskFactor = async (riskFactor) => {
     try {
         const cantons = await cantonCtrl.getByRiskFactor(riskFactor);
-        if(!cantons)
+        if (!cantons)
             throw new ResponseError("Error!", "Not founded");
         return cantons;
     } catch (error) {
@@ -198,7 +198,7 @@ export const cantonWithRiskFactor = async (riskFactor) => {
 export const provinceWithRiskFactor = async (riskFactor) => {
     try {
         const provinces = await provinceCtrl.getByRiskFactor(riskFactor);
-        if(!provinces)
+        if (!provinces)
             throw new ResponseError("Error!", "Not founded");
         return provinces;
     } catch (error) {
@@ -209,9 +209,76 @@ export const provinceWithRiskFactor = async (riskFactor) => {
 export const regionWithRiskFactor = async (riskFactor) => {
     try {
         const regions = await regionCtrl.getByRiskFactor(riskFactor);
-        if(!regions)
+        if (!regions)
             throw new ResponseError("Error!", "Not founded");
         return regions;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const genderWithMoreSymptoms = async (region, initDate, finalDate) => {
+    try {
+        const masc = await PgSingleton.findOne(`
+            SELECT COUNT(DISTINCT sfu.fk_symptom) as amount
+            FROM users u 
+            INNER JOIN symptomsforuser sfu ON u.pk_user = sfu.fk_user 
+            INNER JOIN cantons c ON u.fk_canton = c.pk_canton 
+            INNER JOIN regions r ON c.fk_region = r.pk_region 
+            WHERE u.gender = 'M' AND u.status = ${EStatus.ACTIVE} AND r.pk_region = ${region} AND sfu."date" between '${initDate}' AND '${finalDate}'
+        `);
+        if (!masc)
+            throw new ResponseError("Error!", "Not found");
+        const fem = await PgSingleton.findOne(`
+            SELECT COUNT(DISTINCT sfu.fk_symptom) as amount
+            FROM users u 
+            INNER JOIN symptomsforuser sfu ON u.pk_user = sfu.fk_user 
+            INNER JOIN cantons c ON u.fk_canton = c.pk_canton 
+            INNER JOIN regions r ON c.fk_region = r.pk_region 
+            WHERE u.gender = 'F' AND u.status = ${EStatus.ACTIVE} AND r.pk_region = ${region} AND sfu."date" between '${initDate}' AND '${finalDate}'
+        `);
+        if (!fem)
+            throw new ResponseError("Error!", "Not found");
+        const payload = {
+            "Masculino": masc.amount,
+            "Femenino": fem.amount
+        };
+        return payload;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const ageMostAffected = async (initDate, finalDate) => {
+    try {
+        let minDate = await PgSingleton.findOne(`SELECT u.dateofbirth AS date FROM users u WHERE u.status = ${EStatus.ACTIVE} ORDER BY u.dateofbirth ASC LIMIT 1`);
+        if (!minDate)
+            throw new ResponseError("Error!", "Date not founded");
+        minDate = +minDate.date.toString().substr(11, 4);
+        let maxDate = await PgSingleton.findOne(`SELECT u.dateofbirth AS date FROM users u WHERE u.status = ${EStatus.ACTIVE} ORDER BY u.dateofbirth DESC LIMIT 1`);
+        if (!maxDate)
+            throw new ResponseError("Error!", "Date not founded");
+        maxDate = +maxDate.date.toString().substr(11, 4);
+        // eslint-disable-next-line no-array-constructor
+        const ageAffected = new Array();
+        let result = await PgSingleton.findOne(`
+            SELECT COUNT(DISTINCT s.fk_symptom) AS amount
+            FROM users u 
+            INNER JOIN symptomsforuser s ON u.pk_user = s.fk_user 
+            WHERE u.dateofbirth BETWEEN '${minDate}-01-01' AND '${minDate + 5}-12-31' AND s.date BETWEEN '${initDate}' AND '${finalDate}'
+        `);
+        ageAffected.push({ "Age": `${minDate} - ${minDate + 5}`, "Affected": result.amount });
+        while (minDate < maxDate) {
+            minDate += 6;
+            let result = await PgSingleton.findOne(`
+                SELECT COUNT(DISTINCT s.fk_symptom) AS amount
+                FROM users u 
+                INNER JOIN symptomsforuser s ON u.pk_user = s.fk_user 
+                WHERE u.dateofbirth BETWEEN '${minDate}-01-01' AND '${minDate + 5}-12-31' AND s.date BETWEEN '${initDate}' AND '${finalDate}'
+            `);
+            ageAffected.push({ "Age": `${minDate} - ${minDate + 5}`, "Affected": result.amount });
+        }
+        return ageAffected;
     } catch (error) {
         throw error;
     }

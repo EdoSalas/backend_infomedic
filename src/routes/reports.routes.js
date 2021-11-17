@@ -192,7 +192,7 @@ router.post('/cantonWithRiskFactor', jsonParser, async (req, res) => {
                 "Cantons with risk factor",
                 await reports.cantonWithRiskFactor(riskFactor)
             )
-        ); 
+        );
     } catch (error) {
         if (error instanceof ResponseError)
             return res.status(400).json(Object.assign(error));
@@ -216,7 +216,7 @@ router.post('/provinceWithRiskFactor', jsonParser, async (req, res) => {
                 "Provinces with risk factor",
                 await reports.provinceWithRiskFactor(riskFactor)
             )
-        ); 
+        );
     } catch (error) {
         if (error instanceof ResponseError)
             return res.status(400).json(Object.assign(error));
@@ -240,7 +240,7 @@ router.post('/regionWithRiskFactor', jsonParser, async (req, res) => {
                 "Regions with risk factor",
                 await reports.regionWithRiskFactor(riskFactor)
             )
-        ); 
+        );
     } catch (error) {
         if (error instanceof ResponseError)
             return res.status(400).json(Object.assign(error));
@@ -250,6 +250,54 @@ router.post('/regionWithRiskFactor', jsonParser, async (req, res) => {
             new ResponseError(
                 "Reports",
                 "Error in reports.routes.js exec router.post('/regionWithRiskFactor')"
+            )
+        );
+    }
+});
+
+router.post('/genderWithMoreSymptoms', jsonParser, async (req, res) => {
+    try {
+        const { region, initDate, finalDate } = req.body;
+        return res.status(200).json(
+            new BaseResponse(
+                "Reports",
+                "Gender With More Symptoms",
+                await reports.genderWithMoreSymptoms(region, initDate, finalDate)
+            )
+        );
+    } catch (error) {
+        if (error instanceof ResponseError)
+            return res.status(400).json(Object.assign(error));
+        if (error instanceof Error)
+            return res.status(400).json(Object.assign(error));
+        return res.status(400).json(
+            new ResponseError(
+                "Reports",
+                "Error in reports.routes.js exec router.post('/genderWithMoreSymptoms')"
+            )
+        );
+    }
+});
+
+router.post('/ageMostAffected', jsonParser, async (req, res) => {
+    try {
+        const { initDate, finalDate } = req.body;
+        return res.status(200).json(
+            new BaseResponse(
+                "Reports",
+                "Age Most Affected",
+                await reports.ageMostAffected(initDate, finalDate)
+            )
+        );
+    } catch (error) {
+        if (error instanceof ResponseError)
+            return res.status(400).json(Object.assign(error));
+        if (error instanceof Error)
+            return res.status(400).json(Object.assign(error));
+        return res.status(400).json(
+            new ResponseError(
+                "Reports",
+                "Error in reports.routes.js exec router.post('/genderWithMoreSymptoms')"
             )
         );
     }
