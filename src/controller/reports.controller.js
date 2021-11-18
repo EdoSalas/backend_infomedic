@@ -55,6 +55,50 @@ export const diseasesForUser = async (id) => {
     }
 };
 
+export const diseasesForUserReport = async (id) => {
+    try {
+        const user = await userCtrl.getByID(id);
+        if (!user)
+            throw new ResponseError("Error!", "Not user founded");
+
+        const allDiseases = await diseasesCtrl.getAll();
+        if (!allDiseases)
+            throw new ResponseError("Error!", "Not diseases founded");
+
+        // eslint-disable-next-line no-array-constructor
+        const diseases = new Array();
+        await Promise.all(
+            allDiseases.map(async (d) => {
+                const amount = await PgSingleton.findOne(`
+                    SELECT COUNT(DISTINCT sfd.fk_symptom) AS symptoms
+                    FROM diseases d
+                    INNER JOIN symptomsfordesease sfd ON sfd.fk_disease = d.pk_disease 
+                    WHERE d.pk_disease = ${d.id}
+                `);
+                const amountUserSymptoms = await PgSingleton.findOne(`
+                    SELECT COUNT(DISTINCT sfu.fk_symptom) AS symptoms
+                    FROM diseases d 
+                    INNER JOIN symptomsfordesease sfd ON d.pk_disease = sfd.fk_disease 
+                    INNER JOIN symptomsforuser sfu ON sfd.fk_symptom = sfu.fk_symptom 
+                    INNER JOIN users u ON sfu.fk_user = u.pk_user 
+                    WHERE u.id = '${user.idNumber}' AND u.status = ${EStatus.ACTIVE} AND d.pk_disease = ${d.id}
+                `);
+                if (amountUserSymptoms.symptoms > 0) {
+                    const percentage = (amountUserSymptoms.symptoms * 100) / amount.symptoms;
+                    if (percentage >= 75) {
+                        diseases.push(d);
+                    }
+                }
+            })
+        );
+
+        return new DiseasesForUser(user, diseases);
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+};
+
 export const diseasesForRegion = async (id, initDate, finalDate) => {
     try {
         const region = await PgSingleton.findOne(`SELECT r.* FROM regions r WHERE r.pk_region = ${id}`);
@@ -67,7 +111,7 @@ export const diseasesForRegion = async (id, initDate, finalDate) => {
         let diseases = new Array();
         await Promise.all(
             users.map(async (u) => {
-                const r = await diseasesForUser(u.idNumber, initDate, finalDate);
+                const r = await diseasesForUserReport(u.idNumber, initDate, finalDate);
                 if (r.diseases.length > 0)
                     return await Promise.all(
                         r.diseases.map(async (d) => {
