@@ -11,12 +11,12 @@ const router = Router();
 
 router.post('/', jsonParser, async (req, res) => {
     try {
-        const { title, description } = req.body;
+        const { title, description, user } = req.body;
         return res.status(200).json(
             new BaseResponse(
                 "Medical Recomendations",
                 "Medical Recomendation inserted",
-                await medicalCtrl.save(new MedicalRecomendations("", title, description, EStatus.ACTIVE))
+                await medicalCtrl.save(new MedicalRecomendations("", title, description, EStatus.ACTIVE, user))
             )
         );
     } catch (error) {

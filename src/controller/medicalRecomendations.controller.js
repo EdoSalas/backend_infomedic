@@ -6,7 +6,7 @@ import ResponseError from "../response/ResponseError";
 const convert = async (medRecomendation, type) => {
     try {
         if (type === 'one')
-            return new MedicalRecomendations(medRecomendation.pk_medrecomendation, medRecomendation.title, medRecomendation.description, medRecomendation.status);
+            return new MedicalRecomendations(medRecomendation.pk_medrecomendation, medRecomendation.title, medRecomendation.description, medRecomendation.status, medRecomendation.fk_user);
         else {
             // eslint-disable-next-line no-array-constructor
             const medicalRecomendations = new Array();
@@ -15,7 +15,8 @@ const convert = async (medRecomendation, type) => {
                     md.pk_medrecomendation,
                     md.title,
                     md.description,
-                    md.status
+                    md.status,
+                    md.fk_user
                 ));
             });
             return medicalRecomendations;
@@ -39,7 +40,7 @@ export const save = async (md) => {
         }
 
         const result = await PgSingleton.save(
-            `INSERT INTO medicalrecomendations (title, description, status) VALUES ('${md.title}', '${md.description}', ${EStatus.ACTIVE})`,
+            `INSERT INTO medicalrecomendations (title, description, status, fk_user) VALUES ('${md.title}', '${md.description}', ${EStatus.ACTIVE}, ${md.user})`,
             `SELECT m.* FROM medicalrecomendations m WHERE m.title = '${md.title}' AND m.description = '${md.description}' AND m.status = ${EStatus.ACTIVE}`
         );
         if (!result)
