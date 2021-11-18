@@ -9,12 +9,12 @@ const router = Router();
 
 router.post('/diseasesForUser', jsonParser, async (req, res) => {
     try {
-        const { user, initDate, finalDate } = req.body;
+        const { user } = req.body;
         return res.status(200).json(
             new BaseResponse(
                 "Reports",
                 "Possible diseases of the user",
-                await reports.diseasesForUser(user, initDate, finalDate)
+                await reports.diseasesForUser(user)
             )
         );
     } catch (error) {
