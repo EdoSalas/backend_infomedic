@@ -60,7 +60,7 @@ export const getByName = async (name) => {
 export const getByRiskFactor = async (riskFactor) => {
     try {
         const result = await PgSingleton.find(`
-            SELECT p.*
+            SELECT DISTINCT p.*
             FROM provinces p 
             INNER JOIN cantons c ON p.pk_province = c.fk_province 
             INNER JOIN users u ON c.pk_canton = u.fk_canton 
