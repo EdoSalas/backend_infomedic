@@ -81,7 +81,7 @@ export const getUserSymptoms = async (user) => {
             SELECT sfu.* 
             FROM symptomsforuser sfu 
             INNER JOIN symptoms s ON sfu.fk_symptom = s.pk_symptom 
-            WHERE sfu.status = ${EStatus.ACTIVE} AND sfu.fk_user = ${user} AND s.tatus = ${EStatus.ACTIVE}
+            WHERE sfu.status = ${EStatus.ACTIVE} AND sfu.fk_user = ${user} AND s.status = ${EStatus.ACTIVE}
             ORDER BY s.name
         `);
         if (!result)
